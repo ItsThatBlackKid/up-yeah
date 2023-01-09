@@ -39,9 +39,9 @@ class UpClient {
             const accountResources: AccountResource[] = [];
 
             accounts.forEach(account => {
-                const ownerShipType = account.attributes.ownershipType === "INDIVIDUAL" ? OwnershipTypeEnum.INDIVIDUAL : OwnershipTypeEnum.JOINT
+                const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType === "INDIVIDUAL" ? OwnershipTypeEnum.INDIVIDUAL : OwnershipTypeEnum.JOINT
                 const acc = new AccountResource(account.id, {
-                    accountType: account.type,
+                    accountType: account.attributes.accountType,
                     balance: account.attributes.balance,
                     createdAt: new Date(account.attributes.createdAt),
                     displayName: account.attributes.displayName,
