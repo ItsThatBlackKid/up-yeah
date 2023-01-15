@@ -2,7 +2,7 @@ import UpClient from "../lib/client/UpClient";
 
 const getAccounts = async () => {
     const client = new UpClient({
-        personalAccessToken: "up:yeah:lcQdPo6fY16UQ5HnDKonnja34NXva07D8A8ztPlFy3qy1paeGzuaEDaPCJvPrftH6029u8khwYzyc09OQTnvyhr4saDbSZjaQiNLktJPOJwo5KCSJiIDTqmag6yxzY1q"
+        personalAccessToken: "xyz"
     });
 
     const resources = await client.getAccounts();
