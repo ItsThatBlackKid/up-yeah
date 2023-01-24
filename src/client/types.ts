@@ -1,6 +1,6 @@
 import AccountResource from '../resources/AccountResource';
-import {MoneyObject} from "../resources/types";
-import {AccountRelationships} from "../types";
+import { MoneyObject } from '../resources/types';
+import { AccountRelationships } from '../types';
 
 export type UpClientOptions = {
   personalAccessToken: string;
@@ -13,25 +13,33 @@ type ResponseLinks = {
 
 type AccountAttributes = {
   displayName: string;
-  accountType: string
-  balance: MoneyObject
-  createdAt: string
+  accountType: string;
+  balance: MoneyObject;
+  createdAt: string;
   ownershipType: string;
-}
+};
 
 type AccountResourceResponse = {
   type: string;
   id: string;
   attributes: AccountAttributes;
-  relationships: AccountRelationships
+  relationships: AccountRelationships;
   links?: {
-    self: string
-  }
-}
-
-
+    self: string;
+  };
+};
 
 export type AccountResponse = {
   data: [AccountResourceResponse];
   links: ResponseLinks;
+};
+
+export type ErrorObject = {
+  status: string;
+  title: string;
+  detail: string;
+  source?: {
+    parameter?: string;
+    pointer?: string;
+  };
 };

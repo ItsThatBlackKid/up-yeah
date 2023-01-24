@@ -1,7 +1,7 @@
 export type AccountRelationships = {
-    transactions: {
-        links?: {
-            related: string
-        }
-    }
-}
+  transactions: {
+    links?: {
+      related: string;
+    };
+  };
+};

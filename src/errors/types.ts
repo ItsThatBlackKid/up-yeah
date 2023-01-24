@@ -1,5 +1,4 @@
-
 export type ErrorSource = {
-    parameter: string;
-    pointer: string;
-}
+  parameter?: string;
+  pointer?: string;
+};

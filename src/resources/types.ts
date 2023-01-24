@@ -1,4 +1,4 @@
-import {AccountRelationships} from "../types";
+import { AccountRelationships } from '../types';
 
 export enum OwnershipTypeEnum {
   INDIVIDUAL,

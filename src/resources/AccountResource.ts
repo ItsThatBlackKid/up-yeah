@@ -1,9 +1,8 @@
 import Resource from './Resource';
 import { AccountAttributes, MoneyObject, OwnershipTypeEnum } from './types';
-import {AccountRelationships} from "../types";
+import { AccountRelationships } from '../types';
 
 export default class AccountResource extends Resource {
-
   private readonly _id: string;
   private readonly _resourceType: string = 'accounts';
 
@@ -24,7 +23,7 @@ export default class AccountResource extends Resource {
     this._createdAt = accountAttributes.createdAt;
     this._displayName = accountAttributes.displayName;
     this._ownershipType = accountAttributes.ownershipType;
-    this._relationships = relationships
+    this._relationships = relationships;
   }
 
   get id(): string {
@@ -58,5 +57,4 @@ export default class AccountResource extends Resource {
   get relationships(): AccountRelationships {
     return this._relationships;
   }
-
 }
