@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "tsc",
     "clean": "rm -rf ./lib",
     "lint": "tslint -p tsconfig.json",

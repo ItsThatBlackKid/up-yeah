@@ -1,8 +1,7 @@
-import { AccountRelationships } from '../types';
 
 export enum OwnershipTypeEnum {
-  INDIVIDUAL,
-  JOINT,
+  INDIVIDUAL = "INDIVIDUAL",
+  JOINT = "JOINT",
 }
 
 export type MoneyObject = {

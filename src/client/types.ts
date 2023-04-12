@@ -1,6 +1,5 @@
-import AccountResource from '../resources/AccountResource';
-import { MoneyObject } from '../resources/types';
-import { AccountRelationships } from '../types';
+import {MoneyObject, OwnershipTypeEnum} from "../resources/types";
+import {AccountRelationships} from "../types";
 
 export type UpClientOptions = {
   personalAccessToken: string;
@@ -29,11 +28,21 @@ type AccountResourceResponse = {
   };
 };
 
-export type AccountResponse = {
+export type GetAccountsResponse = {
   data: [AccountResourceResponse];
   links: ResponseLinks;
 };
 
+export type GetAccountResponse = {
+  data: AccountResourceResponse;
+  links: ResponseLinks;
+}
+
+export type GetAccountsQueryOptions = {
+  pageSize?: number,
+  filterAccType?: string,
+  filterAccOwnershipType?: OwnershipTypeEnum
+}
 export type ErrorObject = {
   status: string;
   title: string;
