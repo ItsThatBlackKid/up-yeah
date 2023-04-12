@@ -36,7 +36,6 @@ class UpClient {
 
     async getAccounts(options?: GetAccountsQueryOptions): Promise<AccountResource[]> {
         try {
-
             let reqData: AxiosResponse<GetAccountsResponse> | undefined;
 
             if (options) {
@@ -67,12 +66,13 @@ class UpClient {
             } else {
                 reqData = await this.clientInstance.get<GetAccountsResponse>('/accounts');
             }
+
             const responseData = reqData.data;
             const accounts = responseData.data;
             const accountResources: AccountResource[] = [];
 
             accounts.forEach(account => {
-                const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType as OwnershipTypeEnum;
+                const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType as OwnershipTypeEnum
                 const acc = new AccountResource(account.id, {
                     accountType: account.attributes.accountType,
                     balance: account.attributes.balance,
