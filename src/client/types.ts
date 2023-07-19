@@ -1,54 +1,90 @@
-import {AccountTypeEnum, MoneyObject, OwnershipTypeEnum} from "../resources/types";
-import {AccountRelationships} from "../types";
+import {
+    AccountTypeEnum, CardPurchaseMethodObject, CashbackObject,
+    HoldInfoObject,
+    MoneyObject,
+    OwnershipTypeEnum, RoundUpObject,
+    TransactionStatusEnum
+} from "../resources/types";
+import {AccountRelationships, ResourceLink, TransactionRelationships} from "../types";
 
 export type UpClientOptions = {
-  personalAccessToken: string;
+    personalAccessToken: string;
 };
 
 type ResponseLinks = {
-  prev?: string;
-  next?: string;
+    prev?: string;
+    next?: string;
 };
 
 type AccountAttributes = {
-  displayName: string;
-  accountType: AccountTypeEnum;
-  balance: MoneyObject;
-  createdAt: string;
-  ownershipType: string;
+    displayName: string;
+    accountType: AccountTypeEnum;
+    balance: MoneyObject;
+    createdAt: string;
+    ownershipType: string;
 };
 
 type AccountResourceResponse = {
-  type: string;
-  id: string;
-  attributes: AccountAttributes;
-  relationships: AccountRelationships;
-  links?: {
-    self: string;
-  };
+    type: string;
+    id: string;
+    attributes: AccountAttributes;
+    relationships: AccountRelationships;
+    links?: {
+        self: string;
+    };
 };
 
+export type TransactionAttributesResponse = {
+    status: TransactionStatusEnum;
+    rawText?: string;
+    description: string;
+    message?: string;
+    isCategorizable: boolean;
+    holdInfo?: HoldInfoObject;
+    roundUp?: RoundUpObject;
+    cashBack?: CashbackObject;
+    amount: MoneyObject;
+    foreignAmount?: MoneyObject;
+    cardPurchaseMethod?: CardPurchaseMethodObject;
+    settledAt?: string;
+    createdAt: string;
+}
+
+export type TransactionResponse = {
+    type: string;
+    id: string;
+    attributes: TransactionAttributesResponse,
+    relationships: TransactionRelationships,
+    links: ResourceLink
+}
+
+export type ListTransactionResponse = {
+    data: [TransactionResponse],
+    links: ResponseLinks;
+}
+
+
 export type GetAccountsResponse = {
-  data: [AccountResourceResponse];
-  links: ResponseLinks;
+    data: [AccountResourceResponse];
+    links: ResponseLinks;
 };
 
 export type GetAccountResponse = {
-  data: AccountResourceResponse;
-  links: ResponseLinks;
+    data: AccountResourceResponse;
+    links: ResponseLinks;
 }
 
 export type GetAccountsQueryOptions = {
-  pageSize?: number,
-  filterAccType?: AccountTypeEnum,
-  filterAccOwnershipType?: OwnershipTypeEnum
+    pageSize?: number,
+    filterAccType?: AccountTypeEnum,
+    filterAccOwnershipType?: OwnershipTypeEnum
 }
 export type ErrorObject = {
-  status: string;
-  title: string;
-  detail: string;
-  source?: {
-    parameter?: string;
-    pointer?: string;
-  };
+    status: string;
+    title: string;
+    detail: string;
+    source?: {
+        parameter?: string;
+        pointer?: string;
+    };
 };

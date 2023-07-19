@@ -5,10 +5,18 @@
 
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import AccountResource from '../resources/AccountResource';
-import {GetAccountResponse, GetAccountsQueryOptions, GetAccountsResponse, UpClientOptions, ErrorObject} from './types';
+import {
+    GetAccountResponse,
+    GetAccountsQueryOptions,
+    GetAccountsResponse,
+    UpClientOptions,
+    ErrorObject,
+    ListTransactionResponse
+} from './types';
 import {AccountTypeEnum, OwnershipTypeEnum} from "../resources/types";
-import UpError, {IUpError} from '../errors/UpError';
+import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
+import TransactionResource from "../resources/TransactionResource";
 
 interface GetAccountsQueryParams {
     'page[size]'?: number
@@ -39,8 +47,8 @@ class UpClient {
         return this.clientInstance;
     }
 
-    private buildQueryParams =  (options?: GetAccountsQueryOptions): GetAccountsQueryParams| undefined => {
-        if(!options) return undefined;
+    private buildQueryParams = (options?: GetAccountsQueryOptions): GetAccountsQueryParams | undefined => {
+        if (!options) return undefined;
 
         const params: GetAccountsQueryParams = {};
 
@@ -58,6 +66,19 @@ class UpClient {
         }
 
         return params;
+    }
+
+    private buildAndThrowErrors = (e: any) =>  {
+        const errors: ErrorObject[] | undefined = e.response.data.errors;
+        const collectedErrors: UpError[] = [];
+
+        if (errors) {
+            errors.forEach((err) => {
+                collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
+            });
+        }
+
+        throw new UpErrorCollection(collectedErrors);
     }
 
     public getAccounts = async (options?: GetAccountsQueryOptions): Promise<AccountResource[]> => {
@@ -94,16 +115,7 @@ class UpClient {
 
             return accountResources;
         } catch (e: any) {
-            const errors: ErrorObject[] | undefined = e.response.data.errors;
-            const collectedErrors: UpError[] = [];
-
-            if(errors) {
-                errors.forEach((err) => {
-                    collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
-                });
-            }
-
-            throw new UpErrorCollection(collectedErrors);
+            throw this.buildAndThrowErrors(e);
         }
     }
 
@@ -125,15 +137,30 @@ class UpClient {
                 account.relationships
             );
         } catch (e: any) {
-            const errors: ErrorObject[] | undefined = e.response.data.errors;
-            const collectedErrors: IUpError[] = [];
-            if(errors) {
-                errors.forEach((err) => {
-                    collectedErrors.push({...err});
-                });
-            }
+            throw this.buildAndThrowErrors(e);
+        }
 
-            throw new UpErrorCollection(collectedErrors);
+    }
+
+    public listTransactions = async (): Promise<TransactionResource[]> => {
+        try {
+            const listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions');
+            const transactionData = listResponse.data;
+
+            const transactionResource: TransactionResource[] = [];
+
+            transactionData.data.forEach((transaction) => {
+                const resource: TransactionResource = new TransactionResource(transaction.id, {
+                    ...transaction.attributes,
+                    createdAt: new Date(transaction.attributes.createdAt),
+                    settledAt: !!transaction.attributes.settledAt ? new Date(transaction.attributes.settledAt) : undefined
+                }, transaction.relationships);
+
+                transactionResource.push(resource);
+            })
+            return transactionResource;
+        } catch (e: any) {
+            throw this.buildAndThrowErrors(e);
         }
 
     }

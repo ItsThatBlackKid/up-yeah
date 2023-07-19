@@ -18,9 +18,9 @@ export type AccountRelationships = {
 };
 
 export type TransactionRelationships = {
-    accounts: RelationshipResource,
+    account: RelationshipResource,
     transferAccount?: RelationshipResource
-    category: RelationshipResource
-    parentCategory: RelationshipResource
+    category?: RelationshipResource
+    parentCategory?: RelationshipResource
 }
 

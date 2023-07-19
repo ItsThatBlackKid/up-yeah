@@ -40,17 +40,19 @@ export type AccountAttributes = {
 };
 
 export type TransactionAttributes = {
-    status: TransactionStatusEnum,
+    status: TransactionStatusEnum;
     rawText?: string;
     description: string;
     message?: string;
     isCategorizable: boolean;
-    holdInfo?: HoldInfoObject,
-    roundUp?: RoundUpObject,
-    settledAt?: string,
-    createdAt: string
-    cardPurchaseMethod?: CardPurchaseMethodObject
-    cashback?: CashbackObject
+    holdInfo?: HoldInfoObject;
+    roundUp?: RoundUpObject;
+    cashBack?: CashbackObject;
+    amount: MoneyObject;
+    foreignAmount?: MoneyObject;
+    cardPurchaseMethod?: CardPurchaseMethodObject;
+    settledAt?: Date,
+    createdAt: Date
 };
 
 export type HoldInfoObject = {
