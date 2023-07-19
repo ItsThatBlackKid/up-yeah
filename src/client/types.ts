@@ -1,4 +1,4 @@
-import {MoneyObject, OwnershipTypeEnum} from "../resources/types";
+import {AccountTypeEnum, MoneyObject, OwnershipTypeEnum} from "../resources/types";
 import {AccountRelationships} from "../types";
 
 export type UpClientOptions = {
@@ -12,7 +12,7 @@ type ResponseLinks = {
 
 type AccountAttributes = {
   displayName: string;
-  accountType: string;
+  accountType: AccountTypeEnum;
   balance: MoneyObject;
   createdAt: string;
   ownershipType: string;
@@ -40,7 +40,7 @@ export type GetAccountResponse = {
 
 export type GetAccountsQueryOptions = {
   pageSize?: number,
-  filterAccType?: string,
+  filterAccType?: AccountTypeEnum,
   filterAccOwnershipType?: OwnershipTypeEnum
 }
 export type ErrorObject = {

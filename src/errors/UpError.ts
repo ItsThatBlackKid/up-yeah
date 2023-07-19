@@ -5,7 +5,14 @@
  */
 import { ErrorSource } from './types';
 
-export default class UpError extends Error {
+export interface IUpError {
+  status: string;
+  title: string;
+  detail: string;
+  source?: ErrorSource;
+}
+
+export default class UpError extends Error implements IUpError{
   private readonly _status: string;
   private readonly _title: string;
   private readonly _detail: string;

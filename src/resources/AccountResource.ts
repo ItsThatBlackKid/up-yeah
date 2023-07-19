@@ -1,60 +1,38 @@
 import Resource from './Resource';
-import { AccountAttributes, MoneyObject, OwnershipTypeEnum } from './types';
-import { AccountRelationships } from '../types';
+import {AccountAttributes, AccountTypeEnum, MoneyObject, OwnershipTypeEnum, ResourceType} from './types';
+import {AccountRelationships} from '../types';
 
-export default class AccountResource extends Resource {
-  private readonly _id: string;
-  private readonly _resourceType: string = 'accounts';
+export interface IAccountResource extends Resource {
+    accountType: AccountTypeEnum;
+    balance: MoneyObject;
+    createdAt: Date;
+    displayName: string;
+    ownershipType: OwnershipTypeEnum;
+    relationships: AccountRelationships
+}
 
-  private readonly _accountType: string;
-  private readonly _balance: MoneyObject;
-  private readonly _createdAt: Date;
-  private readonly _displayName: string;
-  private readonly _ownershipType: OwnershipTypeEnum;
+export default class AccountResource implements IAccountResource {
 
-  private readonly _relationships: AccountRelationships;
+    constructor(id: string, accountAttributes: AccountAttributes, relationships: AccountRelationships) {
 
-  constructor(id: string, accountAttributes: AccountAttributes, relationships: AccountRelationships) {
-    super();
+        this.id = id;
+        this.resourceType = 'accounts';
+        this.accountType = accountAttributes.accountType;
+        this.balance = accountAttributes.balance;
+        this.createdAt = accountAttributes.createdAt;
+        this.displayName = accountAttributes.displayName;
+        this.ownershipType = accountAttributes.ownershipType;
+        this.relationships = relationships;
+    }
 
-    this._id = id;
-    this._accountType = accountAttributes.accountType;
-    this._balance = accountAttributes.balance;
-    this._createdAt = accountAttributes.createdAt;
-    this._displayName = accountAttributes.displayName;
-    this._ownershipType = accountAttributes.ownershipType;
-    this._relationships = relationships;
-  }
+    accountType: AccountTypeEnum;
+    balance: MoneyObject;
+    createdAt: Date;
+    displayName: string;
+    id: string;
+    ownershipType: OwnershipTypeEnum;
+    resourceType: ResourceType;
+    relationships: AccountRelationships;
 
-  get id(): string {
-    return this._id;
-  }
 
-  get resourceType(): string {
-    return this._resourceType;
-  }
-
-  get accountType(): string {
-    return this._accountType;
-  }
-
-  get balance(): MoneyObject {
-    return this._balance;
-  }
-
-  get createdAt(): Date {
-    return this._createdAt;
-  }
-
-  get displayName(): string {
-    return this._displayName;
-  }
-
-  get ownershipType(): OwnershipTypeEnum {
-    return this._ownershipType;
-  }
-
-  get relationships(): AccountRelationships {
-    return this._relationships;
-  }
 }

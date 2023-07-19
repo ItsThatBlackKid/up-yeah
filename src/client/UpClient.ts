@@ -6,10 +6,15 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import AccountResource from '../resources/AccountResource';
 import {GetAccountResponse, GetAccountsQueryOptions, GetAccountsResponse, UpClientOptions, ErrorObject} from './types';
-import {OwnershipTypeEnum} from "../resources/types";
-import UpError from '../errors/UpError';
+import {AccountTypeEnum, OwnershipTypeEnum} from "../resources/types";
+import UpError, {IUpError} from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
 
+interface GetAccountsQueryParams {
+    'page[size]'?: number
+    'filter[accountType]'?: AccountTypeEnum
+    'filter[ownershipType]'?: OwnershipTypeEnum
+}
 
 class UpClient {
     private readonly clientInstance: AxiosInstance;
@@ -34,32 +39,34 @@ class UpClient {
         return this.clientInstance;
     }
 
-    async getAccounts(options?: GetAccountsQueryOptions): Promise<AccountResource[]> {
+    private buildQueryParams =  (options?: GetAccountsQueryOptions): GetAccountsQueryParams| undefined => {
+        if(!options) return undefined;
+
+        const params: GetAccountsQueryParams = {};
+
+
+        if (options.pageSize) {
+            params["page[size]"] = options.pageSize
+        }
+
+        if (options.filterAccOwnershipType) {
+            params["filter[ownershipType]"] = options.filterAccOwnershipType
+        }
+
+        if (options.filterAccType) {
+            params["filter[accountType]"] = options.filterAccType;
+        }
+
+        return params;
+    }
+
+    public getAccounts = async (options?: GetAccountsQueryOptions): Promise<AccountResource[]> => {
         try {
             let reqData: AxiosResponse<GetAccountsResponse> | undefined;
 
-            if (options) {
-                let params = {}
-                if (options.pageSize) {
-                    params = {
-                        'page[size]': options.pageSize
-                    }
-                }
+            const params = this.buildQueryParams(options);
 
-                if (options.filterAccOwnershipType) {
-                    params = {
-                        ...params,
-                        'filter[accountType]': options.filterAccType
-                    }
-                }
-
-                if(options.filterAccType) {
-                    params = {
-                        ...params,
-                        'filter[ownershipType]': options.filterAccOwnershipType
-                    }
-                }
-
+            if (params) {
                 reqData = await this.clientInstance.get<GetAccountsResponse>('/accounts', {
                     params
                 });
@@ -85,17 +92,20 @@ class UpClient {
             })
 
 
-      return accountResources;
-    } catch (e: any) {
-      const errors: ErrorObject[] = e.response.data.errors;
-      const collectedErrors: UpError[] = [];
-      errors.forEach((err) => {
-        collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
-      });
+            return accountResources;
+        } catch (e: any) {
+            const errors: ErrorObject[] | undefined = e.response.data.errors;
+            const collectedErrors: UpError[] = [];
 
-      throw new UpErrorCollection(collectedErrors);
+            if(errors) {
+                errors.forEach((err) => {
+                    collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
+                });
+            }
+
+            throw new UpErrorCollection(collectedErrors);
+        }
     }
-  }
 
     async getAccount(id: string): Promise<AccountResource | undefined> {
 
@@ -106,7 +116,7 @@ class UpClient {
 
             return new AccountResource(account.id,
                 {
-                    accountType: account.attributes.accountType,
+                    accountType: account.attributes.accountType as AccountTypeEnum,
                     balance: account.attributes.balance,
                     createdAt: new Date(account.attributes.createdAt),
                     displayName: account.attributes.displayName,
@@ -114,10 +124,16 @@ class UpClient {
                 },
                 account.relationships
             );
-        } catch (e) {
-            // tslint:disable-next-line:no-console
-            console.log(e);
-            return undefined
+        } catch (e: any) {
+            const errors: ErrorObject[] | undefined = e.response.data.errors;
+            const collectedErrors: IUpError[] = [];
+            if(errors) {
+                errors.forEach((err) => {
+                    collectedErrors.push({...err});
+                });
+            }
+
+            throw new UpErrorCollection(collectedErrors);
         }
 
     }

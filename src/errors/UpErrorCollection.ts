@@ -1,12 +1,12 @@
 /**
  * Created on 15/01/23
  */
-import UpError from './UpError';
+import {IUpError} from './UpError';
 
 export default class UpErrorCollection extends Error {
-  private readonly _errors: UpError[];
+  private readonly _errors: IUpError[];
 
-  constructor(errors: UpError[]) {
+  constructor(errors: IUpError[]) {
     super('Errors returned from API');
 
     // for why this is here, see: https://stackoverflow.com/questions/41102060/typescript-extending-error-class
@@ -15,11 +15,11 @@ export default class UpErrorCollection extends Error {
     this._errors = errors;
   }
 
-  get errors(): UpError[] {
+  get errors(): IUpError[] {
     return this._errors;
   }
 
-  public getFirstError(): UpError {
+  public getFirstError(): IUpError {
     return this._errors[0];
   }
 }
