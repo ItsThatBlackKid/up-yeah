@@ -1,6 +1,6 @@
-import Resource from './Resource';
-import {AccountAttributes, AccountTypeEnum, MoneyObject, OwnershipTypeEnum, ResourceType} from './types';
-import {AccountRelationships} from '../types';
+import Resource from '../Resource';
+import {AccountAttributes, AccountTypeEnum, MoneyObject, OwnershipTypeEnum, ResourceType} from '../types';
+import {AccountRelationships} from '../../types';
 
 export interface IAccountResource extends Resource {
     accountType: AccountTypeEnum;

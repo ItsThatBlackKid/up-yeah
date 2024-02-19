@@ -4,24 +4,26 @@
  */
 
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
-import AccountResource from '../resources/AccountResource';
+import AccountResource from '../resources/Account/AccountResource';
 import {
+    ErrorObject,
     GetAccountResponse,
     GetAccountsQueryOptions,
     GetAccountsResponse,
-    UpClientOptions,
-    ErrorObject,
-    ListTransactionResponse
+    ListTransactionResponse,
+    UpClientOptions
 } from './types';
 import {AccountTypeEnum, OwnershipTypeEnum} from "../resources/types";
 import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
 import TransactionResource from "../resources/TransactionResource";
+import {buildAccounts} from '../utils/buildAccounts';
+import ResourceCollection from '../resources/ResourceCollection';
 
 interface GetAccountsQueryParams {
-    'page[size]'?: number
-    'filter[accountType]'?: AccountTypeEnum
-    'filter[ownershipType]'?: OwnershipTypeEnum
+    'page[size]'?: number;
+    'filter[accountType]'?: AccountTypeEnum;
+    'filter[ownershipType]'?: OwnershipTypeEnum;
 }
 
 class UpClient {
@@ -54,11 +56,11 @@ class UpClient {
 
 
         if (options.pageSize) {
-            params["page[size]"] = options.pageSize
+            params["page[size]"] = options.pageSize;
         }
 
         if (options.filterAccOwnershipType) {
-            params["filter[ownershipType]"] = options.filterAccOwnershipType
+            params["filter[ownershipType]"] = options.filterAccOwnershipType;
         }
 
         if (options.filterAccType) {
@@ -66,9 +68,9 @@ class UpClient {
         }
 
         return params;
-    }
+    };
 
-    private buildAndThrowErrors = (e: any) =>  {
+    private buildAndThrowErrors = (e: any) => {
         const errors: ErrorObject[] | undefined = e.response.data.errors;
         const collectedErrors: UpError[] = [];
 
@@ -79,9 +81,9 @@ class UpClient {
         }
 
         throw new UpErrorCollection(collectedErrors);
-    }
+    };
 
-    public getAccounts = async (options?: GetAccountsQueryOptions): Promise<AccountResource[]> => {
+    public getAccounts = async (options?: GetAccountsQueryOptions): Promise<ResourceCollection<AccountResource>> => {
         try {
             let reqData: AxiosResponse<GetAccountsResponse> | undefined;
 
@@ -97,30 +99,16 @@ class UpClient {
 
             const responseData = reqData.data;
             const accounts = responseData.data;
-            const accountResources: AccountResource[] = [];
 
-            accounts.forEach(account => {
-                const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType as OwnershipTypeEnum
-                const acc = new AccountResource(account.id, {
-                    accountType: account.attributes.accountType,
-                    balance: account.attributes.balance,
-                    createdAt: new Date(account.attributes.createdAt),
-                    displayName: account.attributes.displayName,
-                    ownershipType: ownerShipType,
-                }, account.relationships);
+            const convertedAccounts: AccountResource[] = buildAccounts(accounts);
 
-                accountResources.push(acc);
-            })
-
-
-            return accountResources;
+            return new ResourceCollection<AccountResource>(convertedAccounts, responseData.links, this.clientInstance)
         } catch (e: any) {
             throw this.buildAndThrowErrors(e);
         }
-    }
+    };
 
     async getAccount(id: string): Promise<AccountResource | undefined> {
-
         try {
             const data = (await this.clientInstance.get<GetAccountResponse>(`/account/${id}`)).data;
             const account = data.data;
@@ -139,7 +127,6 @@ class UpClient {
         } catch (e: any) {
             throw this.buildAndThrowErrors(e);
         }
-
     }
 
     public listTransactions = async (): Promise<TransactionResource[]> => {
@@ -157,13 +144,13 @@ class UpClient {
                 }, transaction.relationships);
 
                 transactionResource.push(resource);
-            })
+            });
             return transactionResource;
         } catch (e: any) {
             throw this.buildAndThrowErrors(e);
         }
 
-    }
+    };
 }
 
 export default UpClient;

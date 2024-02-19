@@ -59,5 +59,4 @@ export default class TransactionResource implements ITransactionResource {
     settledAt?: Date;
     status: TransactionStatusEnum;
     relationships: TransactionRelationships;
-
 }

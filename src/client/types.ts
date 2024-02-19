@@ -5,26 +5,22 @@ import {
     OwnershipTypeEnum, RoundUpObject,
     TransactionStatusEnum
 } from "../resources/types";
-import {AccountRelationships, ResourceLink, TransactionRelationships} from "../types";
+import {AccountRelationships, ResourceLink, ResponseLinks, TransactionRelationships} from "../types";
 
 export type UpClientOptions = {
     personalAccessToken: string;
 };
 
-type ResponseLinks = {
-    prev?: string;
-    next?: string;
-};
 
 type AccountAttributes = {
     displayName: string;
-    accountType: AccountTypeEnum;
+    accountType: string;
     balance: MoneyObject;
     createdAt: string;
     ownershipType: string;
 };
 
-type AccountResourceResponse = {
+export type AccountResourceResponse = {
     type: string;
     id: string;
     attributes: AccountAttributes;
@@ -59,13 +55,13 @@ export type TransactionResponse = {
 }
 
 export type ListTransactionResponse = {
-    data: [TransactionResponse],
+    data: TransactionResponse[],
     links: ResponseLinks;
 }
 
 
 export type GetAccountsResponse = {
-    data: [AccountResourceResponse];
+    data: AccountResourceResponse[];
     links: ResponseLinks;
 };
 

@@ -1,6 +1,6 @@
-import {AccountRelationships} from '../../types'
-import AccountResource from '../AccountResource'
-import {AccountAttributes, AccountTypeEnum, OwnershipTypeEnum} from '../types'
+import {AccountRelationships} from '../../../types'
+import AccountResource from '../../Account/AccountResource'
+import {AccountAttributes, AccountTypeEnum, OwnershipTypeEnum} from '../../types'
 
 const mockAttributes: AccountAttributes = {
     displayName: 'test',
