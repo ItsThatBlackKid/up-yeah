@@ -4,7 +4,6 @@ import {AccountTypeEnum, OwnershipTypeEnum} from '../resources/types';
 
 export const buildAccount = (account:  AccountResourceResponse): AccountResource => {
     const {id, attributes, relationships} = account;
-    const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType as OwnershipTypeEnum;
     return new AccountResource(id, {
         ...attributes,
         accountType: attributes.accountType as AccountTypeEnum,

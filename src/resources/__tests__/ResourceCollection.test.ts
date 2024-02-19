@@ -1,10 +1,12 @@
 import mockAxios from '../../__mocks__/axios';
 import ResourceCollection from '../ResourceCollection';
-import axios, {AxiosInstance} from 'axios';
+import {AxiosInstance} from 'axios';
 import AccountResource from '../Account/AccountResource';
 import {ResponseLinks} from '../../types';
-import {mockAccountResponse, mockUpAccountsResponse} from '../../__mocks__/accountData';
-import {AccountTypeEnum, OwnershipTypeEnum} from '../types';
+import {mockUpAccountsResponse} from '../../__mocks__/accountData';
+import {AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum} from '../types';
+import {mockListTransactionsMultiResponse} from '../../__mocks__/transactionData';
+import TransactionResource from '../TransactionResource';
 
 describe('ResourceLink', () => {
     it('should set prevLink and nextLink when constructed', () => {
@@ -20,6 +22,28 @@ describe('ResourceLink', () => {
 
 
     describe('next', () => {
+        it('should return null if nextLink is null', async () => {
+            const collection = new ResourceCollection<AccountResource>([], {
+                prev: 'http://some.up.au/api/v1/account/endpoint/1',
+                next: null
+            }, mockAxios as unknown as AxiosInstance);
+
+            expect(await collection.next()).toEqual(null)
+        })
+
+        it('should return undefined if returned resource array is empty', async () => {
+            mockAxios.get.mockResolvedValue({
+                data: {
+                    data: []
+                }
+            });
+            const collection = new ResourceCollection<AccountResource>([], {
+                prev: null,
+                next: 'http://some.up.au/api/v1/account/endpoint/1'
+            }, mockAxios as unknown as AxiosInstance);
+
+            expect(await collection.next()).toEqual(null)
+        })
         it('should return next set of resources  on success', async() => {
             mockAxios.get.mockResolvedValue({
                 data: mockUpAccountsResponse
@@ -51,6 +75,55 @@ describe('ResourceLink', () => {
             expect(collection.resources).toEqual([
                 expectedAccountResource
             ]);
+        });
+
+        it('should return next set of transaction resources if available', async () => {
+            mockAxios.get.mockResolvedValue(mockListTransactionsMultiResponse);
+
+            const collection = new ResourceCollection<TransactionResource>([], {
+                prev: null,
+                next: 'http://some.up.au/api/v1/transaction/endpoint/1'
+            }, mockAxios as unknown as AxiosInstance)
+
+            await collection.next();
+
+            const expectedTransactions = [
+                {
+                    amount: {
+                        currencyCode: 'AUD',
+                        value: '4.20',
+                        valueInBaseUnits: 420
+                    },
+                    createdAt: new Date("2023-07-18T07:44:17+10:00"),
+                    description: "This is a transaction",
+                    id: "mockId",
+                    isCategorizable: false,
+                    relationships: {
+                        account: {}
+                    },
+                    resourceType: "transactions",
+                    status: TransactionStatusEnum.SETTLED
+                },
+                {
+                    amount: {
+                        currencyCode: 'AUD',
+                        value: '6.9',
+                        valueInBaseUnits: 690
+                    },
+                    createdAt: new Date("2023-07-18T07:44:17+10:00"),
+                    description: "This is another transaction",
+                    isCategorizable: false,
+                    status: TransactionStatusEnum.SETTLED,
+                    id: "mockId",
+                    relationships: {
+                        account: {}
+                    },
+                    resourceType: "transactions",
+                }
+            ]
+
+            expect(collection.resources).toEqual(expect.arrayContaining(expectedTransactions))
+            expect(collection.nextLink).toEqual('http://some.up.au/api/v1/transaction/endpoint/2')
         })
     })
 })

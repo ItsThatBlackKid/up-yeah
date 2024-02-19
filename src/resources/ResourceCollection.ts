@@ -2,11 +2,11 @@ import AccountResource from './Account/AccountResource';
 import TransactionResource from './TransactionResource';
 import {Maybe, ResourceResponse, ResponseLinks} from '../types';
 import {AxiosInstance, AxiosResponse} from 'axios';
-import {AccountResourceResponse, ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../client/types';
+import {ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../client/types';
 import {buildAccounts} from '../utils/buildAccounts';
-import resource from './Resource';
 import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
+import {buildTransactions} from '../utils/buildTransactions';
 
 interface IResourceLink<T extends AccountResource | TransactionResource> {
     prev: () => Promise<Maybe<T[]>>;
@@ -28,27 +28,29 @@ export default class ResourceCollection<T extends AccountResource | TransactionR
      * Retrieves the previous resource.
      */
     public prev = async (): Promise<Maybe<T[]>> => {
-        if(!this.prevLink) {
-            return null;
-        }
-
-        const res = await this.client.get<T>(this.prevLink);
-
-        return undefined;
+       return this.handleLink(this.prevLink);
     }
 
     private nextAccount = (axiosResponse: AxiosResponse<GetAccountsResponse>): AccountResource[] => {
         return buildAccounts(axiosResponse.data.data);
     }
 
+    private nextTransactions = (axiosResponse:  AxiosResponse<ListTransactionResponse>): TransactionResource[] => {
+        return buildTransactions(axiosResponse.data.data);
+    }
+
     public next = async (): Promise<Maybe<T[]>> => {
-        if(!this.nextLink) {
+       return this.handleLink(this.nextLink);
+    }
+
+    private handleLink = async (linkURL: Maybe<string>) => {
+        if(!linkURL) {
             return null;
         }
 
         let res;
         try {
-            res = await this.client.get<ResourceResponse>(this.nextLink);
+            res = await this.client.get<ResourceResponse>(linkURL);
         } catch (e: any) {
             const errors: ErrorObject[] | undefined = e.response.data.errors;
             const collectedErrors: UpError[] = [];
@@ -61,17 +63,27 @@ export default class ResourceCollection<T extends AccountResource | TransactionR
 
             throw new UpErrorCollection(collectedErrors);
         }
+        if(!res.data.data || res.data.data.length === 0) {
+            return null;
+        }
+
         const {type} = res.data.data[0];
+
+        if(!['accounts', 'transactions'].includes(type)) {
+           return null;
+        }
 
         this.nextLink = res.data.links.next;
         this.prevLink = res.data.links.prev;
 
         if(type === 'accounts') {
             this.resources = this.nextAccount(res as AxiosResponse<GetAccountsResponse>) as unknown as T[]
-
             return this.resources;
         }
 
-        return undefined;
+        if(type === 'transactions') {
+            this.resources = this.nextTransactions(res as AxiosResponse<ListTransactionResponse>) as unknown as T[];
+            return this.resources;
+        }
     }
 }

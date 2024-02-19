@@ -19,6 +19,7 @@ import UpErrorCollection from '../errors/UpErrorCollection';
 import TransactionResource from "../resources/TransactionResource";
 import {buildAccounts} from '../utils/buildAccounts';
 import ResourceCollection from '../resources/ResourceCollection';
+import {buildTransactions} from '../utils/buildTransactions';
 
 interface GetAccountsQueryParams {
     'page[size]'?: number;
@@ -134,18 +135,7 @@ class UpClient {
             const listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions');
             const transactionData = listResponse.data;
 
-            const transactionResource: TransactionResource[] = [];
-
-            transactionData.data.forEach((transaction) => {
-                const resource: TransactionResource = new TransactionResource(transaction.id, {
-                    ...transaction.attributes,
-                    createdAt: new Date(transaction.attributes.createdAt),
-                    settledAt: !!transaction.attributes.settledAt ? new Date(transaction.attributes.settledAt) : undefined
-                }, transaction.relationships);
-
-                transactionResource.push(resource);
-            });
-            return transactionResource;
+            return buildTransactions(transactionData.data);
         } catch (e: any) {
             throw this.buildAndThrowErrors(e);
         }

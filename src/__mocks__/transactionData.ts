@@ -11,7 +11,18 @@ export const mockTransactionAttributes: TransactionAttributesResponse = {
     description: "This is a transaction",
     isCategorizable: false,
     status: TransactionStatusEnum.SETTLED
+}
 
+export const mockTransactionAttributes2: TransactionAttributesResponse = {
+    amount: {
+        currencyCode: 'AUD',
+        value: '6.9',
+        valueInBaseUnits: 690
+    },
+    createdAt: '2023-07-18T07:44:17+10:00',
+    description: "This is another transaction",
+    isCategorizable: false,
+    status: TransactionStatusEnum.SETTLED
 }
 
 export const mockTransactionResponse: TransactionResponse = {
@@ -26,10 +37,23 @@ export const mockTransactionResponse: TransactionResponse = {
 
 export const mockListTransactionsResponse = {
     data: {
-        data:  [mockTransactionResponse]
+        data:  [mockTransactionResponse],
+        links: {
+            prev: null,
+            next: null
+        }
     },
-    links: {
-        prev: null,
-        next: null
+}
+
+export const mockListTransactionsMultiResponse = {
+    data: {
+        data: [mockTransactionResponse, {
+            ...mockTransactionResponse,
+            attributes: mockTransactionAttributes2
+        }],
+        links: {
+            prev: null,
+            next: 'http://some.up.au/api/v1/transaction/endpoint/2'
+        }
     }
 }

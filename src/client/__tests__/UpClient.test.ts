@@ -192,7 +192,7 @@ describe('Up Client', () => {
     })
 
     describe('Transactions', () => {
-        describe('listAccounts', () => {
+        describe('listTransactions', () => {
             it('should make GET call to /transactions when invoked', async () => {
                 mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
 
