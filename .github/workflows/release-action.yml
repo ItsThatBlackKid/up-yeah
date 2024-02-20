@@ -37,6 +37,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: up-yeah@${{steps.semver.outputs.next}}.zip
+          path: up-yeah@${{steps.semver.outputs.next}}.zip
 
       - name: Download artifact
         uses: actions/download-artifact@v3
