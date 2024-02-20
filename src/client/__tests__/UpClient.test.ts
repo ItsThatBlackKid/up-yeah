@@ -345,5 +345,52 @@ describe('Up Client', () => {
             });
 
         })
+        describe('getCategory', () => {
+            it('should make GET call to /categories/{id}', async () => {
+                mockAxios.get.mockResolvedValue({
+                    data: {
+                        data: mockGetCategoriesResponse.data[0]
+                    }
+                })
+
+                await client.getCategory('good-life');
+
+                expect(mockAxios.get).toHaveBeenCalledWith('/categories/good-life')
+            });
+
+            it('should build return CategoryResource on success', async () => {
+                mockAxios.get.mockResolvedValue({
+                    data: {
+                        data: mockGetCategoriesResponse.data[0]
+                    }
+                })
+
+                const category = await client.getCategory('good-life');
+                const expectedCategory: CategoryResource = {
+                    id: 'hobbies',
+                    type: 'categories',
+                    attributes: {
+                        name: 'Hobbies'
+                    },
+                    relationships: {
+                        parent: {
+                            data: {
+                                id: 'good-life',
+                                type: 'categories'
+                            },
+                            links: {
+                                related: 'https://somegood.life/api/v1/etc'
+                            }
+                        },
+                        children: {
+                            data: []
+                        }
+                    }
+                };
+
+
+                expect(category).toEqual(expectedCategory)
+            })
+        })
     })
 });

@@ -22,7 +22,7 @@ import TransactionResource from "../resources/Transactions/TransactionResource";
 import {buildAccounts, buildTransactions} from '../utils';
 import ResourceCollection from '../resources/Resource/ResourceCollection';
 import CategoryResource from '../resources/Categories/CategoryResource';
-import {buildCategories} from '../utils/buildResources/buildCategories';
+import {buildCategories, buildCategory} from '../utils/buildResources/buildCategories';
 
 
 interface GetAccountsQueryParams {
@@ -203,6 +203,17 @@ class UpClient {
             const builtCategories = buildCategories(categoryData.data)
 
             return new ResourceCollection<CategoryResource>(builtCategories, {}, this.clientInstance);
+        }catch (e: any) {
+            throw this.buildAndThrowErrors(e);
+        }
+    }
+
+    public getCategory = async (id: string): Promise<CategoryResource> => {
+        try {
+            const res = await this.clientInstance.get(`/categories/${id}`);
+            const categoryData = res.data;
+
+            return buildCategory(categoryData.data);
         }catch (e: any) {
             throw this.buildAndThrowErrors(e);
         }
