@@ -6,7 +6,7 @@ import {
     TransactionStatusEnum
 } from "../resources/types";
 import {AccountRelationships, ResourceLink, ResponseLinks} from "../types";
-import {TransactionRelationships} from '../../lib/types';
+import {TransactionRelationships} from '../resources/types';
 
 export type UpClientOptions = {
     personalAccessToken: string;
