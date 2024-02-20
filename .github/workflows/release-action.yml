@@ -21,19 +21,26 @@ jobs:
       - run: yarn clean
       - run: yarn build
 
+
       - name: Get Next Version
         id: semver
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{github.token}}
           branch: master
+      - name: Zip artifacts
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r up-yeah@${{steps.semver.outputs.next}}.zip lib
+
+
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
           tag: ${{steps.semver.outputs.next}}
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: "lib/"
+          artifacts: "up-yeah@"${{steps.semver.outputs.next}}
           draft: false
           makeLatest: true
           name: ${{steps.semver.outputs.next}}
