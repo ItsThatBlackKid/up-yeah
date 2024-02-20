@@ -8,8 +8,8 @@ export const mockUpListAccountsEmpty: {data: GetAccountsResponse} = {
             next: null
         }
     },
-
 }
+
 
 export const mockAccountResponse: AccountResourceResponse = {
     type: 'accounts',

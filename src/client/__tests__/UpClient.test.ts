@@ -4,10 +4,14 @@ import AccountResource from '../../resources/Account/AccountResource';
 import {AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum} from '../../resources/types';
 import {IUpError} from '../../errors/UpError';
 import UpErrorCollection from "../../errors/UpErrorCollection";
-import {GetAccountsQueryOptions} from "../types";
+import {GetAccountsQueryOptions, GetTransactionsQueryOptions, TransactionStatus} from "../types";
 import TransactionResource from "../../resources/TransactionResource";
-import {mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty} from '../../__mocks__/accountData';
-import {mockListTransactionsResponse} from '../../__mocks__/transactionData';
+import {
+    mockGetAccountResponse,
+    mockUpAccountsResponse,
+    mockUpListAccountsEmpty
+} from '../../__mocks__/accountData';
+import {mockListTransactionsResponse, mockUpGetTransactionsEmpty} from '../../__mocks__/transactionData';
 
 describe('Up Client', () => {
     it('should create axios instance with correct options', () => {
@@ -192,7 +196,7 @@ describe('Up Client', () => {
     })
 
     describe('Transactions', () => {
-        describe('listTransactions', () => {
+        describe('getTransactions', () => {
             it('should make GET call to /transactions when invoked', async () => {
                 mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
 
@@ -200,7 +204,7 @@ describe('Up Client', () => {
                     personalAccessToken: 'xyz'
                 });
 
-                await client.listTransactions();
+                await client.getTransactions();
 
                 expect(mockAxios.get).toHaveBeenCalledWith('/transactions');
             });
@@ -229,9 +233,9 @@ describe('Up Client', () => {
                     status: TransactionStatusEnum.SETTLED
                 }
 
-                const transactions = await client.listTransactions();
+                const transactions = await client.getTransactions();
 
-                expect(transactions).toEqual(expect.arrayContaining([expectedTransaction]));
+                expect(transactions.resources).toEqual(expect.arrayContaining([expectedTransaction]));
             });
 
             it('should throw UpErrorCollection if API errors', async () => {
@@ -258,10 +262,37 @@ describe('Up Client', () => {
 
 
                 await expect(async () => {
-                    await client.listTransactions();
+                    await client.getTransactions();
                 }).rejects.toThrow(new UpErrorCollection([mockUpError]));
             })
-        });
 
+            it('should pass query params to get call', async () => {
+                mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
+                const client = new UpClient({
+                    personalAccessToken: 'xyz'
+                });
+                const options: GetTransactionsQueryOptions = {
+                    pageSize: 10,
+                    filterStatus: TransactionStatus.HELD,
+                    filterSince: '2020-01-01T01:02:03+10:00',
+                    filterUntil: '2023-01-01T01:02:03+10:00',
+                    filterCategory: 'good-life',
+                    filterTag: 'Holiday'
+                }
+
+                await client.getTransactions(options);
+                expect(mockAxios.get).toHaveBeenCalledWith('/transactions', {
+                    params: {
+                        'page[size]': options.pageSize,
+                        'filter[status]': options.filterStatus,
+                        'filter[since]': options.filterSince,
+                        'filter[until]': options.filterUntil,
+                        'filter[category]': options.filterCategory,
+                        'filter[tag]': options.filterTag
+                    }
+                })
+
+            })
+        });
     })
 });

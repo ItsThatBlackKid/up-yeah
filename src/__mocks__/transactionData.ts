@@ -1,4 +1,4 @@
-import {TransactionAttributesResponse, TransactionResponse} from '../client/types';
+import {ListTransactionResponse, TransactionAttributesResponse, TransactionResponse} from '../client/types';
 import {TransactionStatusEnum} from '../resources/types';
 
 export const mockTransactionAttributes: TransactionAttributesResponse = {
@@ -54,6 +54,17 @@ export const mockListTransactionsMultiResponse = {
         links: {
             prev: null,
             next: 'http://some.up.au/api/v1/transaction/endpoint/2'
+        }
+    }
+}
+
+
+export const mockUpGetTransactionsEmpty: {data: ListTransactionResponse} = {
+    data: {
+        data: [],
+        links: {
+            prev: null,
+            next: null
         }
     }
 }

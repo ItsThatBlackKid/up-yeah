@@ -9,8 +9,8 @@ import {
     ErrorObject,
     GetAccountResponse,
     GetAccountsQueryOptions,
-    GetAccountsResponse,
-    ListTransactionResponse,
+    GetAccountsResponse, GetTransactionsQueryOptions,
+    ListTransactionResponse, TransactionStatus,
     UpClientOptions
 } from './types';
 import {AccountTypeEnum, OwnershipTypeEnum} from "../resources/types";
@@ -21,10 +21,20 @@ import {buildAccounts} from '../utils/buildAccounts';
 import ResourceCollection from '../resources/ResourceCollection';
 import {buildTransactions} from '../utils/buildTransactions';
 
+
 interface GetAccountsQueryParams {
     'page[size]'?: number;
     'filter[accountType]'?: AccountTypeEnum;
     'filter[ownershipType]'?: OwnershipTypeEnum;
+}
+
+interface GetTransactionsQueryParams {
+    'page[size]'?: number;
+    'filter[status]'?: TransactionStatus,
+    'filter[since]'?: string
+    'filter[until]'?: string
+    'filter[category]'?: string
+    'filter[tag]'?: string
 }
 
 class UpClient {
@@ -70,6 +80,37 @@ class UpClient {
 
         return params;
     };
+
+
+    private buildTransactionQueryParams = (options: GetTransactionsQueryOptions): GetTransactionsQueryParams => {
+        const params: GetTransactionsQueryParams = {};
+
+        if(options.pageSize) {
+            params["page[size]"] = options.pageSize;
+        }
+
+        if(options.filterStatus) {
+            params["filter[status]"] = options.filterStatus;
+        }
+
+        if(options.filterSince) {
+            params['filter[since]'] = options.filterSince;
+        }
+
+        if(options.filterUntil) {
+            params['filter[until]'] = options.filterUntil;
+        }
+
+        if(options.filterCategory) {
+            params['filter[category]'] = options.filterCategory
+        }
+
+        if(options.filterTag) {
+            params['filter[tag]'] = options.filterTag;
+        }
+
+        return params;
+    }
 
     private buildAndThrowErrors = (e: any) => {
         const errors: ErrorObject[] | undefined = e.response.data.errors;
@@ -130,16 +171,25 @@ class UpClient {
         }
     }
 
-    public listTransactions = async (): Promise<TransactionResource[]> => {
+    public getTransactions = async (options?: GetTransactionsQueryOptions): Promise<ResourceCollection<TransactionResource>> => {
         try {
-            const listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions');
+            let listResponse;
+            if(options) {
+                const params = this.buildTransactionQueryParams(options);
+                listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions', {
+                    params
+                });
+            } else {
+                listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions');
+            }
             const transactionData = listResponse.data;
 
-            return buildTransactions(transactionData.data);
+            const builtTransactions = buildTransactions(transactionData.data);
+
+            return new ResourceCollection<TransactionResource>(builtTransactions, transactionData.links, this.clientInstance);
         } catch (e: any) {
             throw this.buildAndThrowErrors(e);
         }
-
     };
 }
 
