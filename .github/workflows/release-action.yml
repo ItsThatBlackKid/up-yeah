@@ -2,7 +2,9 @@ name: Build and Release
 on:
   workflow_run:
     workflows: [ Test ]
-    branches: [ master, ci/* ]
+    branches:
+      - master
+      - 'ci/**'
     types:
       - completed
 
