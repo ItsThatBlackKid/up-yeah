@@ -74,4 +74,52 @@ export type CardPurchaseMethodObject = {
     cardNumberSuffix?: string
 }
 
+export type TransactionRelationships = {
+    account: RelationshipResource,
+    transferAccount?: RelationshipResource
+    category?: RelationshipResource
+    parentCategory?: RelationshipResource
+}
+
+export enum TransactionStatusEnum {
+    HELD = 'HELD',
+    SETTLED = 'SETTLED'
+}
+
+export enum CardPurchaseMethodEnum {
+    BAR_CODE = 'BAR_CODE',
+    OCR = 'OCR',
+    CARD_PIN = 'CARD_PIN',
+    CARD_DETAILS = 'CARD_DETAILS',
+    CARD_ON_FILE = 'CARD_ON_FILE',
+    ECOMMERCE = 'ECOMMERCE',
+    MAGNETIC_STRIPE = 'MAGNETIC_STRIPE',
+    CONTACTLESS = 'CONTACTLESS'
+}
+
+/**
+ * End Transaction Types
+ */
+
+
+/**
+ * Category Types
+ */
+
+export type CategoryAttributes = {
+    // name of this category as seen in the Up application
+    name: string
+}
+
+export type CategoryRelationships = {
+    parent: RelationshipResource,
+    children: RelationshipResourceChildren
+}
+
+/**
+ * End Category Types
+ */
+
+
+
 export type ResourceType = 'accounts' | 'transactions' | 'tags' | 'categories'
