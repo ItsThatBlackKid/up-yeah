@@ -1,8 +1,8 @@
-import Resource from '../Resource/Resource';
-import {AccountAttributes, AccountTypeEnum, MoneyObject, OwnershipTypeEnum, ResourceType} from '../types';
+import Resource, {IResource} from '../Resource/Resource';
+import {AccountAttributes, AccountTypeEnum, MoneyObject, OwnershipTypeEnum} from '../types';
 import {AccountRelationships} from '../../types';
 
-export interface IAccountResource extends Resource {
+export interface IAccountResource extends IResource {
     accountType: AccountTypeEnum;
     balance: MoneyObject;
     createdAt: Date;
@@ -11,12 +11,10 @@ export interface IAccountResource extends Resource {
     relationships: AccountRelationships
 }
 
-export default class AccountResource implements IAccountResource {
+export default class AccountResource extends Resource implements IAccountResource {
 
     constructor(id: string, accountAttributes: AccountAttributes, relationships: AccountRelationships) {
-
-        this.id = id;
-        this.type = 'accounts';
+        super(id, 'accounts')
         this.accountType = accountAttributes.accountType;
         this.balance = accountAttributes.balance;
         this.createdAt = accountAttributes.createdAt;
@@ -29,10 +27,6 @@ export default class AccountResource implements IAccountResource {
     balance: MoneyObject;
     createdAt: Date;
     displayName: string;
-    id: string;
     ownershipType: OwnershipTypeEnum;
-    type: ResourceType;
     relationships: AccountRelationships;
-
-
 }
