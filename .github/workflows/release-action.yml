@@ -36,11 +36,22 @@ jobs:
           args: zip -qq -r up-yeah@${{steps.semver.outputs.next}}.zip lib
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: up-yeah@${{steps.semver.outputs.next}}.zip
           path: up-yeah@${{steps.semver.outputs.next}}.zip
-          
+
+      - name: List artifacts
+        run: |
+          ls -lR
+
+      - name: Download up file
+        uses: actions/download-artifact@v4
+
+      - name: List artifacts
+        run: |
+          ls -lR
+
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
