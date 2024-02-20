@@ -58,7 +58,7 @@ jobs:
           tag: ${{steps.semver.outputs.next}}
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: "up-yeah@${{steps.semver.outputs.next}}"
+          artifacts: "up-yeah@${{steps.semver.outputs.next}}.zip"
           draft: false
           makeLatest: true
           name: ${{steps.semver.outputs.next}}
