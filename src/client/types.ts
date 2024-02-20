@@ -75,6 +75,16 @@ export type GetAccountsQueryOptions = {
     filterAccType?: AccountTypeEnum,
     filterAccOwnershipType?: OwnershipTypeEnum
 }
+
+export type GetTransactionsQueryOptions = {
+    pageSize?: number,
+    filterStatus?: TransactionStatus,
+    filterSince?: string,
+    filterUntil?: string,
+    filterCategory?: string,
+    filterTag?: string
+}
+
 export type ErrorObject = {
     status: string;
     title: string;
@@ -84,3 +94,8 @@ export type ErrorObject = {
         pointer?: string;
     };
 };
+
+export enum TransactionStatus {
+    HELD = "HELD",
+    SETTLED = "SETTLED"
+}

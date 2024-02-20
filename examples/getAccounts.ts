@@ -1,5 +1,5 @@
 import UpClient from "../lib/client/UpClient";
-import {GetAccountsQueryOptions} from "../lib/client/types";
+import {GetAccountsQueryOptions, GetTransactionsQueryOptions} from "../lib/client/types";
 import {OwnershipTypeEnum} from "../lib/resources/types";
 
 const client = new UpClient({
@@ -22,6 +22,20 @@ const getAccountsWithOptions = async () => {
         filterAccOwnershipType: OwnershipTypeEnum.INDIVIDUAL
     }
     const collection = await client.getAccounts(options)
+
+    collection.resources.forEach(res => {
+        // tslint:disable-next-line:no-console
+        console.log(res);
+    })
+}
+
+const getTransactionsWithOptions = async () => {
+    const options: GetTransactionsQueryOptions = {
+        pageSize: 2,
+        filterCategory: 'good-life'
+    }
+
+    const collection = await client.getTransactions(options)
 
     collection.resources.forEach(res => {
         // tslint:disable-next-line:no-console
@@ -58,7 +72,8 @@ const getAccountsPagination = async () => {
 }
 
 (async () => {
-    await getAccountsPagination()
+    await getTransactionsWithOptions();
+    // await getAccountsPagination()
     // await getAccounts();
     // await getAccountsWithOptions();
 })();
