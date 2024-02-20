@@ -29,7 +29,7 @@ export default class TransactionResource implements ITransactionResource {
     constructor(id: string, transactionAttributes: TransactionAttributes, relationships: TransactionRelationships) {
         this.id = id;
         this.relationships = relationships;
-        this.resourceType = 'transactions';
+        this.type = 'transactions';
         this.amount = transactionAttributes.amount;
         this.cardPurchaseMethod = transactionAttributes.cardPurchaseMethod;
         this.cashBack = transactionAttributes.cashBack;
@@ -53,7 +53,7 @@ export default class TransactionResource implements ITransactionResource {
     isCategorizable: boolean;
     message?: string;
     rawText?: string;
-    resourceType: ResourceType;
+    type: ResourceType;
     roundUp?: RoundUpObject;
     settledAt?: Date;
     status: TransactionStatusEnum;

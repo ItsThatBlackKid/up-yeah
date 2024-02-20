@@ -1,17 +1,17 @@
 import AccountResource from '../Account/AccountResource';
 import TransactionResource from '../Transactions/TransactionResource';
-import {Maybe, ResourceResponse, ResponseLinks} from '../../types';
+import {AnyResource, Maybe, ResourceResponse, ResponseLinks} from '../../types';
 import {AxiosInstance, AxiosResponse} from 'axios';
 import {ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../../client';
 import {buildAccounts, buildTransactions} from '../../utils';
 import UpError from '../../errors/UpError';
 import UpErrorCollection from '../../errors/UpErrorCollection';
 
-interface IResourceLink<T extends AccountResource | TransactionResource> {
+interface IResourceLink<T extends AnyResource> {
     prev: () => Promise<Maybe<T[]>>;
     next: () => Promise<Maybe<T[]>>;
 }
-export default class ResourceCollection<T extends AccountResource | TransactionResource> implements  IResourceLink<T>{
+export default class ResourceCollection<T extends AnyResource> implements  IResourceLink<T>{
     private client: AxiosInstance
     prevLink: Maybe<string>
     nextLink: Maybe<string>

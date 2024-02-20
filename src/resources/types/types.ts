@@ -121,5 +121,4 @@ export type CategoryRelationships = {
  */
 
 
-
 export type ResourceType = 'accounts' | 'transactions' | 'tags' | 'categories'

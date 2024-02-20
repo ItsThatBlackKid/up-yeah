@@ -16,7 +16,7 @@ export default class AccountResource implements IAccountResource {
     constructor(id: string, accountAttributes: AccountAttributes, relationships: AccountRelationships) {
 
         this.id = id;
-        this.resourceType = 'accounts';
+        this.type = 'accounts';
         this.accountType = accountAttributes.accountType;
         this.balance = accountAttributes.balance;
         this.createdAt = accountAttributes.createdAt;
@@ -31,7 +31,7 @@ export default class AccountResource implements IAccountResource {
     displayName: string;
     id: string;
     ownershipType: OwnershipTypeEnum;
-    resourceType: ResourceType;
+    type: ResourceType;
     relationships: AccountRelationships;
 
 

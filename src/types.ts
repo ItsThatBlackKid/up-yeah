@@ -1,4 +1,9 @@
 import Resource from "./resources/Resource/Resource";
+import AccountResource from './resources/Account/AccountResource';
+import TransactionResource from './resources/Transactions/TransactionResource';
+import CategoryResource from './resources/Categories/CategoryResource';
+
+export type AnyResource = AccountResource | TransactionResource | CategoryResource
 
 export type ResourceLink = {
     self?: string

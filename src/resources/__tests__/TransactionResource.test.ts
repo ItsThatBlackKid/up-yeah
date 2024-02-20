@@ -16,7 +16,7 @@ const mockAttributes: TransactionAttributes = {
 const mockRelationShips: TransactionRelationships = {
     account: {
         data: {
-            resourceType: 'accounts',
+            type: 'accounts',
             id: 'mockId'
         }
     },
@@ -40,6 +40,6 @@ describe('TransactionResource', () => {
         });
 
         expect(transaction.relationships).toEqual(mockRelationShips)
-        expect(transaction.resourceType).toEqual('transactions')
+        expect(transaction.type).toEqual('transactions')
     })
 })

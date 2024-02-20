@@ -19,7 +19,7 @@ describe('buildTransactions.ts', () => {
             relationships: {
                 account: {}
             },
-            resourceType: "transactions",
+            type: "transactions",
             status: TransactionStatusEnum.SETTLED
         }
 
