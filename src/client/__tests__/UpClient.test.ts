@@ -2,18 +2,22 @@ import mockAxios from 'jest-mock-axios';
 import UpClient from '../UpClient';
 import AccountResource from '../../resources/Account/AccountResource';
 import {AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum} from '../../resources/types';
-import {IUpError} from '../../errors/UpError';
+import {IUpError} from '../../errors';
 import UpErrorCollection from "../../errors/UpErrorCollection";
 import {GetAccountsQueryOptions, GetTransactionsQueryOptions, TransactionStatus} from "../types";
-import TransactionResource from "../../resources/TransactionResource";
-import {
-    mockGetAccountResponse,
-    mockUpAccountsResponse,
-    mockUpListAccountsEmpty
-} from '../../__mocks__/accountData';
+import TransactionResource from "../../resources/Transactions/TransactionResource";
+import {mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty} from '../../__mocks__/accountData';
 import {mockListTransactionsResponse, mockUpGetTransactionsEmpty} from '../../__mocks__/transactionData';
+import {mockGetCategoriesResponse} from '../../__mocks__/categoryData';
+import CategoryResource from '../../resources/Categories/CategoryResource';
 
+let client: UpClient;
 describe('Up Client', () => {
+    beforeEach(() => {
+        client = new UpClient({
+            personalAccessToken: 'xyz'
+        });
+    })
     it('should create axios instance with correct options', () => {
         // tslint:disable-next-line:no-unused-expression
         new UpClient({
@@ -32,9 +36,6 @@ describe('Up Client', () => {
             it('should make GET call to /accounts when invoked', async () => {
                 mockAxios.get.mockResolvedValue(mockUpListAccountsEmpty);
 
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
 
                 await client.getAccounts();
 
@@ -43,10 +44,6 @@ describe('Up Client', () => {
 
             it('should return accounts found in response data', async () => {
                 mockAxios.get.mockResolvedValue({data: mockUpAccountsResponse});
-
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
 
                 const accounts = await client.getAccounts();
 
@@ -71,10 +68,6 @@ describe('Up Client', () => {
 
             it('should pass query params to get call', async () => {
                 mockAxios.get.mockResolvedValue(mockUpListAccountsEmpty);
-
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
 
                 const options: GetAccountsQueryOptions = {
                     pageSize: 10,
@@ -111,15 +104,11 @@ describe('Up Client', () => {
                     },
                 });
 
-                const client = new UpClient({
-                    personalAccessToken: 'xyz',
-                });
 
 
                 await expect(async () => {
                     await client.getAccounts();
                 }).rejects.toThrow(new UpErrorCollection([mockUpError]));
-
             });
 
         });
@@ -128,10 +117,6 @@ describe('Up Client', () => {
             it('should make GET call to /account/{id} when invoked', async () => {
                 mockAxios.get.mockResolvedValue(mockGetAccountResponse);
 
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
-
                 await client.getAccount('mockId');
 
                 expect(mockAxios.get).toHaveBeenCalledWith('/account/mockId');
@@ -139,10 +124,6 @@ describe('Up Client', () => {
 
             it('should return account with matching ID', async () => {
                 mockAxios.get.mockResolvedValue(mockGetAccountResponse)
-
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
 
                 const account: AccountResource | undefined = await client.getAccount('mockId');
                 const expectedAccountResource = new AccountResource('mockId', {
@@ -182,11 +163,6 @@ describe('Up Client', () => {
                     },
                 });
 
-                const client = new UpClient({
-                    personalAccessToken: 'xyz',
-                });
-
-
                 await expect(async () => {
                     await client.getAccount('mockId');
                 }).rejects.toThrow(new UpErrorCollection([mockUpError]));
@@ -200,10 +176,6 @@ describe('Up Client', () => {
             it('should make GET call to /transactions when invoked', async () => {
                 mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
 
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
-
                 await client.getTransactions();
 
                 expect(mockAxios.get).toHaveBeenCalledWith('/transactions');
@@ -211,10 +183,6 @@ describe('Up Client', () => {
 
             it('should return transactions in response', async () => {
                 mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
-
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
 
                 const expectedTransaction: TransactionResource = {
                     amount: {
@@ -229,7 +197,7 @@ describe('Up Client', () => {
                     relationships: {
                         account: {}
                     },
-                    resourceType: "transactions",
+                    type: "transactions",
                     status: TransactionStatusEnum.SETTLED
                 }
 
@@ -256,9 +224,6 @@ describe('Up Client', () => {
                     },
                 });
 
-                const client = new UpClient({
-                    personalAccessToken: 'xyz',
-                });
 
 
                 await expect(async () => {
@@ -268,9 +233,7 @@ describe('Up Client', () => {
 
             it('should pass query params to get call', async () => {
                 mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
-                const client = new UpClient({
-                    personalAccessToken: 'xyz'
-                });
+
                 const options: GetTransactionsQueryOptions = {
                     pageSize: 10,
                     filterStatus: TransactionStatus.HELD,
@@ -294,5 +257,140 @@ describe('Up Client', () => {
 
             })
         });
+    })
+
+    describe('Categories', () => {
+        describe('getCategories', () => {
+            it('should invoke axios get', async () => {
+                mockAxios.get.mockResolvedValue({
+                    data: {
+                        data: []
+                    }
+                });
+
+                await client.getCategories();
+
+                expect(mockAxios.get).toHaveBeenCalledWith('/categories')
+            })
+            it('should return a collection of all categories if successful', async () => {
+                mockAxios.get.mockResolvedValue({
+                    data: mockGetCategoriesResponse
+                })
+
+
+                const expectedCategories: CategoryResource[] = [
+                    {
+                        id: 'hobbies',
+                        type: 'categories',
+                        attributes: {
+                            name: 'Hobbies'
+                        },
+                        relationships: {
+                            parent: {
+                                data: {
+                                    id: 'good-life',
+                                    type: 'categories'
+                                },
+                                links: {
+                                    related: 'https://somegood.life/api/v1/etc'
+                                }
+                            },
+                            children: {
+                                data: []
+                            }
+                        }
+                    },
+                    {
+                        id: 'good-life',
+                        type: 'categories',
+                        attributes: {
+                            name: 'Good Life'
+                        },
+                        relationships: {
+                            parent: {
+
+                            },
+                            children: {
+                                data: []
+                            }
+                        }
+                    }
+                ]
+
+                const categories = await client.getCategories();
+
+                expect(categories.resources).toEqual(expect.arrayContaining(expectedCategories))
+            })
+            it('should throw UpError if api returns an error', async () => {
+                const mockUpError: IUpError = {
+                    status: '400',
+                    title: 'Bad request',
+                    detail: 'Some of the information provided is invalid',
+                    source: {
+                        parameter: 'x',
+                        pointer: '0',
+                    },
+                }
+                mockAxios.get.mockRejectedValue({
+                    response: {
+                        data: {
+                            errors: [mockUpError]
+                        },
+                    },
+                });
+
+                await expect(async () => {
+                    await client.getCategories();
+                }).rejects.toThrow(new UpErrorCollection([mockUpError]));
+            });
+
+        })
+        describe('getCategory', () => {
+            it('should make GET call to /categories/{id}', async () => {
+                mockAxios.get.mockResolvedValue({
+                    data: {
+                        data: mockGetCategoriesResponse.data[0]
+                    }
+                })
+
+                await client.getCategory('good-life');
+
+                expect(mockAxios.get).toHaveBeenCalledWith('/categories/good-life')
+            });
+
+            it('should build return CategoryResource on success', async () => {
+                mockAxios.get.mockResolvedValue({
+                    data: {
+                        data: mockGetCategoriesResponse.data[0]
+                    }
+                })
+
+                const category = await client.getCategory('good-life');
+                const expectedCategory: CategoryResource = {
+                    id: 'hobbies',
+                    type: 'categories',
+                    attributes: {
+                        name: 'Hobbies'
+                    },
+                    relationships: {
+                        parent: {
+                            data: {
+                                id: 'good-life',
+                                type: 'categories'
+                            },
+                            links: {
+                                related: 'https://somegood.life/api/v1/etc'
+                            }
+                        },
+                        children: {
+                            data: []
+                        }
+                    }
+                };
+
+
+                expect(category).toEqual(expectedCategory)
+            })
+        })
     })
 });

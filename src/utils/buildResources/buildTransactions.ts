@@ -1,5 +1,5 @@
-import {TransactionResponse} from '../client/types';
-import TransactionResource from '../resources/TransactionResource';
+import {TransactionResponse} from '../../client';
+import TransactionResource from '../../resources/Transactions/TransactionResource';
 
 export const buildTransaction = (transaction: TransactionResponse): TransactionResource => {
     const {id, relationships, attributes} = transaction;

@@ -1,8 +1,7 @@
 import AccountResource from '../../resources/Account/AccountResource';
 import {AccountTypeEnum, OwnershipTypeEnum} from '../../resources/types';
-import {buildAccount, buildAccounts} from '../buildAccounts';
-import {mockAccountResponse, mockGetAccountResponse, mockUpAccountsResponse} from '../../__mocks__/accountData';
-import {AccountResourceResponse} from '../../client/types';
+import {buildAccount, buildAccounts} from '../buildResources';
+import {mockAccountResponse, mockUpAccountsResponse} from '../../__mocks__/accountData';
 
 
 describe('buildAccounts.tsx', () => {

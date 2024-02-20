@@ -1,11 +1,12 @@
 import {
-    AccountTypeEnum, CardPurchaseMethodObject, CashbackObject,
+    AccountTypeEnum, CardPurchaseMethodObject, CashbackObject, CategoryRelationships,
     HoldInfoObject,
     MoneyObject,
     OwnershipTypeEnum, RoundUpObject,
     TransactionStatusEnum
 } from "../resources/types";
-import {AccountRelationships, ResourceLink, ResponseLinks, TransactionRelationships} from "../types";
+import {AccountRelationships, ResourceLink, ResponseLinks} from "../types";
+import {TransactionRelationships} from '../resources/types';
 
 export type UpClientOptions = {
     personalAccessToken: string;
@@ -59,7 +60,6 @@ export type ListTransactionResponse = {
     links: ResponseLinks;
 }
 
-
 export type GetAccountsResponse = {
     data: AccountResourceResponse[];
     links: ResponseLinks;
@@ -83,6 +83,23 @@ export type GetTransactionsQueryOptions = {
     filterUntil?: string,
     filterCategory?: string,
     filterTag?: string
+}
+
+export type CategoryAttributeResponse = {
+    name: string
+}
+
+
+export type CategoryResponse = {
+    type: 'categories',
+    id: string,
+    attributes: CategoryAttributeResponse,
+    relationships: CategoryRelationships
+}
+
+export type GetCategoriesResponse = {
+    data: CategoryResponse[],
+    links?: ResponseLinks
 }
 
 export type ErrorObject = {

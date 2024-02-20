@@ -1,6 +1,6 @@
 import {mockListTransactionsMultiResponse, mockTransactionResponse} from '../../__mocks__/transactionData';
-import {buildTransaction, buildTransactions} from '../buildTransactions';
-import TransactionResource from '../../resources/TransactionResource';
+import {buildTransaction, buildTransactions} from '../buildResources';
+import TransactionResource from '../../resources/Transactions/TransactionResource';
 import {TransactionStatusEnum} from '../../resources/types';
 
 describe('buildTransactions.ts', () => {
@@ -19,7 +19,7 @@ describe('buildTransactions.ts', () => {
             relationships: {
                 account: {}
             },
-            resourceType: "transactions",
+            type: "transactions",
             status: TransactionStatusEnum.SETTLED
         }
 
@@ -43,7 +43,7 @@ describe('buildTransactions.ts', () => {
                 relationships: {
                     account: {}
                 },
-                resourceType: "transactions",
+                type: "transactions",
                 status: TransactionStatusEnum.SETTLED
             },
             {
@@ -60,7 +60,7 @@ describe('buildTransactions.ts', () => {
                 relationships: {
                     account: {}
                 },
-                resourceType: "transactions",
+                type: "transactions",
             }
         ]
 

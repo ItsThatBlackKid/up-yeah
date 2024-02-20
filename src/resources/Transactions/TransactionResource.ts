@@ -1,13 +1,12 @@
-import Resource from "./Resource";
+import Resource from "../Resource/Resource";
 import {
     CardPurchaseMethodObject,
     CashbackObject,
     HoldInfoObject,
     MoneyObject, ResourceType,
-    RoundUpObject, TransactionAttributes,
+    RoundUpObject, TransactionAttributes, TransactionRelationships,
     TransactionStatusEnum
-} from "./types";
-import {TransactionRelationships} from "../types";
+} from "../types";
 
 export interface ITransactionResource extends Resource{
     status: TransactionStatusEnum;
@@ -30,7 +29,7 @@ export default class TransactionResource implements ITransactionResource {
     constructor(id: string, transactionAttributes: TransactionAttributes, relationships: TransactionRelationships) {
         this.id = id;
         this.relationships = relationships;
-        this.resourceType = 'transactions';
+        this.type = 'transactions';
         this.amount = transactionAttributes.amount;
         this.cardPurchaseMethod = transactionAttributes.cardPurchaseMethod;
         this.cashBack = transactionAttributes.cashBack;
@@ -54,7 +53,7 @@ export default class TransactionResource implements ITransactionResource {
     isCategorizable: boolean;
     message?: string;
     rawText?: string;
-    resourceType: ResourceType;
+    type: ResourceType;
     roundUp?: RoundUpObject;
     settledAt?: Date;
     status: TransactionStatusEnum;

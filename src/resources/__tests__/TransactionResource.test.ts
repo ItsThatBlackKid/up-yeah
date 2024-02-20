@@ -1,6 +1,5 @@
-import {TransactionRelationships} from '../../types'
-import {TransactionAttributes, TransactionStatusEnum} from '../types'
-import TransactionResource from "../TransactionResource";
+import {TransactionAttributes, TransactionRelationships, TransactionStatusEnum} from '../types';
+import TransactionResource from "../Transactions/TransactionResource";
 
 const mockAttributes: TransactionAttributes = {
     amount: {
@@ -17,7 +16,7 @@ const mockAttributes: TransactionAttributes = {
 const mockRelationShips: TransactionRelationships = {
     account: {
         data: {
-            resourceType: 'accounts',
+            type: 'accounts',
             id: 'mockId'
         }
     },
@@ -41,6 +40,6 @@ describe('TransactionResource', () => {
         });
 
         expect(transaction.relationships).toEqual(mockRelationShips)
-        expect(transaction.resourceType).toEqual('transactions')
+        expect(transaction.type).toEqual('transactions')
     })
 })
