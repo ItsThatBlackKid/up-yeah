@@ -1,14 +1,16 @@
-import Resource from "../Resource/Resource";
+import Resource, {IResource} from "../Resource/Resource";
 import {
     CardPurchaseMethodObject,
     CashbackObject,
     HoldInfoObject,
-    MoneyObject, ResourceType,
-    RoundUpObject, TransactionAttributes, TransactionRelationships,
+    MoneyObject,
+    RoundUpObject,
+    TransactionAttributes,
+    TransactionRelationships,
     TransactionStatusEnum
 } from "../types";
 
-export interface ITransactionResource extends Resource{
+export interface ITransactionResource extends IResource {
     status: TransactionStatusEnum;
     rawText?: string;
     description: string;
@@ -25,11 +27,10 @@ export interface ITransactionResource extends Resource{
     relationships: TransactionRelationships
 }
 
-export default class TransactionResource implements ITransactionResource {
+export default class TransactionResource extends Resource implements ITransactionResource {
     constructor(id: string, transactionAttributes: TransactionAttributes, relationships: TransactionRelationships) {
-        this.id = id;
+        super(id, 'transactions');
         this.relationships = relationships;
-        this.type = 'transactions';
         this.amount = transactionAttributes.amount;
         this.cardPurchaseMethod = transactionAttributes.cardPurchaseMethod;
         this.cashBack = transactionAttributes.cashBack;
@@ -49,11 +50,9 @@ export default class TransactionResource implements ITransactionResource {
     description: string;
     foreignAmount?: MoneyObject;
     holdInfo?: HoldInfoObject;
-    id: string;
     isCategorizable: boolean;
     message?: string;
     rawText?: string;
-    type: ResourceType;
     roundUp?: RoundUpObject;
     settledAt?: Date;
     status: TransactionStatusEnum;

@@ -1,21 +1,18 @@
-import Resource from '../Resource/Resource';
-import {CategoryAttributes, CategoryRelationships, ResourceType} from '../types';
+import Resource, {IResource} from '../Resource/Resource';
+import {CategoryAttributes, CategoryRelationships} from '../types';
 
-export interface ICategoryResource extends Resource {
+export interface ICategoryResource extends IResource {
     attributes: CategoryAttributes,
     relationships: CategoryRelationships
 }
 
-export default class CategoryResource implements ICategoryResource {
+export default class CategoryResource extends Resource implements ICategoryResource  {
     constructor(id: string, categoryAttributes: CategoryAttributes, relationships: CategoryRelationships) {
-        this.id = id;
-        this.type = 'categories'
+        super(id, 'categories');
         this.attributes = categoryAttributes;
         this.relationships = relationships
     }
 
     attributes: CategoryAttributes;
-    id: string;
     relationships: CategoryRelationships;
-    type: ResourceType;
 }
