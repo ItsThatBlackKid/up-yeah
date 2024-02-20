@@ -1,13 +1,12 @@
-name: Up Yeah Actions
-strategy:
-  matrix:
-    node-version: ['16.x', '18.x', '20.x']
-
+name: Up-Yeah build and test
 on: [push]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['16.x', '18.x', '20.x']
     steps:
       - uses: actions/checkout@v4
       - name: Use Node ${{matrix.node-version}}
