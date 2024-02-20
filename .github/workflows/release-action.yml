@@ -1,8 +1,10 @@
 name: Build and Release
 on:
   workflow_run:
-    workflows: [ Testing ]
-    branches: [ master, ci/* ]
+    workflows: [ Test ]
+    branches:
+      - master
+      - 'ci/**'
     types:
       - completed
 
@@ -38,10 +40,7 @@ jobs:
         with:
           name: up-yeah@${{steps.semver.outputs.next}}.zip
           path: up-yeah@${{steps.semver.outputs.next}}.zip
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-
+          
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
