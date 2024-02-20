@@ -101,7 +101,7 @@ describe('ResourceLink', () => {
                     relationships: {
                         account: {}
                     },
-                    resourceType: "transactions",
+                    type: "transactions",
                     status: TransactionStatusEnum.SETTLED
                 },
                 {
@@ -118,7 +118,7 @@ describe('ResourceLink', () => {
                     relationships: {
                         account: {}
                     },
-                    resourceType: "transactions",
+                    type: "transactions",
                 }
             ]
 
