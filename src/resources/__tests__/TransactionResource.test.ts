@@ -1,6 +1,5 @@
-import {TransactionRelationships} from '../../types'
-import {TransactionAttributes, TransactionStatusEnum} from '../types'
-import TransactionResource from "../TransactionResource";
+import {TransactionAttributes, TransactionRelationships, TransactionStatusEnum} from '../types';
+import TransactionResource from "../Transactions/TransactionResource";
 
 const mockAttributes: TransactionAttributes = {
     amount: {

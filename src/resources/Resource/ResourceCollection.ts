@@ -1,12 +1,11 @@
-import AccountResource from './Account/AccountResource';
-import TransactionResource from './TransactionResource';
-import {Maybe, ResourceResponse, ResponseLinks} from '../types';
+import AccountResource from '../Account/AccountResource';
+import TransactionResource from '../Transactions/TransactionResource';
+import {Maybe, ResourceResponse, ResponseLinks} from '../../types';
 import {AxiosInstance, AxiosResponse} from 'axios';
-import {ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../client/types';
-import {buildAccounts} from '../utils/buildAccounts';
-import UpError from '../errors/UpError';
-import UpErrorCollection from '../errors/UpErrorCollection';
-import {buildTransactions} from '../utils/buildTransactions';
+import {ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../../client';
+import {buildAccounts, buildTransactions} from '../../utils';
+import UpError from '../../errors/UpError';
+import UpErrorCollection from '../../errors/UpErrorCollection';
 
 interface IResourceLink<T extends AccountResource | TransactionResource> {
     prev: () => Promise<Maybe<T[]>>;

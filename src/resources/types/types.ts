@@ -1,35 +1,20 @@
-export enum OwnershipTypeEnum {
-    INDIVIDUAL = "INDIVIDUAL",
-    JOINT = "JOINT",
-}
+import {RelationshipResource, RelationshipResourceChildren} from '../../types';
+
+
+
+/**
+ * Account Types
+ */
 
 export enum AccountTypeEnum {
     SAVER = 'SAVER',
     TRANSACTIONAL = 'TRANSACTIONAL'
 }
 
-export enum TransactionStatusEnum {
-    HELD = 'HELD',
-    SETTLED = 'SETTLED'
+export enum OwnershipTypeEnum {
+    INDIVIDUAL = "INDIVIDUAL",
+    JOINT = "JOINT",
 }
-
-export enum CardPurchaseMethodEnum {
-    BAR_CODE = 'BAR_CODE',
-    OCR = 'OCR',
-    CARD_PIN = 'CARD_PIN',
-    CARD_DETAILS = 'CARD_DETAILS',
-    CARD_ON_FILE = 'CARD_ON_FILE',
-    ECOMMERCE = 'ECOMMERCE',
-    MAGNETIC_STRIPE = 'MAGNETIC_STRIPE',
-    CONTACTLESS = 'CONTACTLESS'
-}
-
-
-export type MoneyObject = {
-    currencyCode: string;
-    value: string;
-    valueInBaseUnits: number;
-};
 
 export type AccountAttributes = {
     displayName: string;
@@ -38,6 +23,20 @@ export type AccountAttributes = {
     balance: MoneyObject;
     createdAt: Date;
 };
+
+export type MoneyObject = {
+    currencyCode: string;
+    value: string;
+    valueInBaseUnits: number;
+};
+
+/**
+ * End Account Types
+ */
+
+/**
+ * Transaction Types
+ */
 
 export type TransactionAttributes = {
     status: TransactionStatusEnum;

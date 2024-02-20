@@ -2,10 +2,10 @@ import mockAxios from 'jest-mock-axios';
 import UpClient from '../UpClient';
 import AccountResource from '../../resources/Account/AccountResource';
 import {AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum} from '../../resources/types';
-import {IUpError} from '../../errors/UpError';
+import {IUpError} from '../../errors';
 import UpErrorCollection from "../../errors/UpErrorCollection";
 import {GetAccountsQueryOptions, GetTransactionsQueryOptions, TransactionStatus} from "../types";
-import TransactionResource from "../../resources/TransactionResource";
+import TransactionResource from "../../resources/Transactions/TransactionResource";
 import {
     mockGetAccountResponse,
     mockUpAccountsResponse,

@@ -5,7 +5,8 @@ import {
     OwnershipTypeEnum, RoundUpObject,
     TransactionStatusEnum
 } from "../resources/types";
-import {AccountRelationships, ResourceLink, ResponseLinks, TransactionRelationships} from "../types";
+import {AccountRelationships, ResourceLink, ResponseLinks} from "../types";
+import {TransactionRelationships} from '../../lib/types';
 
 export type UpClientOptions = {
     personalAccessToken: string;

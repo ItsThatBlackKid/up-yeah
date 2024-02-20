@@ -1,13 +1,12 @@
-import Resource from "./Resource";
+import Resource from "../Resource/Resource";
 import {
     CardPurchaseMethodObject,
     CashbackObject,
     HoldInfoObject,
     MoneyObject, ResourceType,
-    RoundUpObject, TransactionAttributes,
+    RoundUpObject, TransactionAttributes, TransactionRelationships,
     TransactionStatusEnum
-} from "./types";
-import {TransactionRelationships} from "../types";
+} from "../types";
 
 export interface ITransactionResource extends Resource{
     status: TransactionStatusEnum;

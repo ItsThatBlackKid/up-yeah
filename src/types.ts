@@ -1,4 +1,4 @@
-import Resource from "./resources/Resource";
+import Resource from "./resources/Resource/Resource";
 
 export type ResourceLink = {
     self?: string
@@ -10,6 +10,11 @@ export type RelationshipResource = {
     links?: ResourceLink
 }
 
+export type RelationshipResourceChildren = {
+    data: Resource[],
+    links?: ResourceLink
+}
+
 export type AccountRelationships = {
     transactions: {
         data: Resource[]
@@ -17,12 +22,7 @@ export type AccountRelationships = {
     };
 };
 
-export type TransactionRelationships = {
-    account: RelationshipResource,
-    transferAccount?: RelationshipResource
-    category?: RelationshipResource
-    parentCategory?: RelationshipResource
-}
+
 
 export type Maybe<T> = T | undefined | null
 

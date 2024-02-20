@@ -9,17 +9,18 @@ import {
     ErrorObject,
     GetAccountResponse,
     GetAccountsQueryOptions,
-    GetAccountsResponse, GetTransactionsQueryOptions,
-    ListTransactionResponse, TransactionStatus,
+    GetAccountsResponse,
+    GetTransactionsQueryOptions,
+    ListTransactionResponse,
+    TransactionStatus,
     UpClientOptions
 } from './types';
 import {AccountTypeEnum, OwnershipTypeEnum} from "../resources/types";
 import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
-import TransactionResource from "../resources/TransactionResource";
-import {buildAccounts} from '../utils/buildAccounts';
-import ResourceCollection from '../resources/ResourceCollection';
-import {buildTransactions} from '../utils/buildTransactions';
+import TransactionResource from "../resources/Transactions/TransactionResource";
+import {buildAccounts, buildTransactions} from '../utils';
+import ResourceCollection from '../resources/Resource/ResourceCollection';
 
 
 interface GetAccountsQueryParams {
