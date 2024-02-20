@@ -1,9 +1,9 @@
 name: Build and Release
 on:
   workflow_run:
-    workflows: [Testing]
-    branches: [master]
-    types: 
+    workflows: [ Testing ]
+    branches: [ master ]
+    types:
       - completed
 
 
@@ -21,7 +21,6 @@ jobs:
       - run: yarn clean
       - run: yarn build
 
-
       - name: Get Next Version
         id: semver
         uses: ietf-tools/semver-action@v1
@@ -33,14 +32,13 @@ jobs:
         with:
           args: zip -qq -r up-yeah@${{steps.semver.outputs.next}}.zip lib
 
-
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
           tag: ${{steps.semver.outputs.next}}
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: "up-yeah@"${{steps.semver.outputs.next}}
+          artifacts: "up-yeah@${{steps.semver.outputs.next}}"
           draft: false
           makeLatest: true
           name: ${{steps.semver.outputs.next}}
