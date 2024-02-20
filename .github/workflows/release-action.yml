@@ -43,14 +43,15 @@ jobs:
 
       - name: List artifacts
         run: |
-          ls -lR
+          ls -lr
+
 
       - name: Download up file
         uses: actions/download-artifact@v4
 
       - name: List artifacts
         run: |
-          ls -lR
+          ls -lr
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
