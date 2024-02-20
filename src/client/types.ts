@@ -1,5 +1,5 @@
 import {
-    AccountTypeEnum, CardPurchaseMethodObject, CashbackObject,
+    AccountTypeEnum, CardPurchaseMethodObject, CashbackObject, CategoryRelationships,
     HoldInfoObject,
     MoneyObject,
     OwnershipTypeEnum, RoundUpObject,
@@ -60,7 +60,6 @@ export type ListTransactionResponse = {
     links: ResponseLinks;
 }
 
-
 export type GetAccountsResponse = {
     data: AccountResourceResponse[];
     links: ResponseLinks;
@@ -84,6 +83,23 @@ export type GetTransactionsQueryOptions = {
     filterUntil?: string,
     filterCategory?: string,
     filterTag?: string
+}
+
+export type CategoryAttributeResponse = {
+    name: string
+}
+
+
+export type CategoryResponse = {
+    type: 'categories',
+    id: string,
+    attributes: CategoryAttributeResponse,
+    relationships: CategoryRelationships
+}
+
+export type GetCategoriesResponse = {
+    data: CategoryResponse[],
+    links?: ResponseLinks
 }
 
 export type ErrorObject = {

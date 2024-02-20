@@ -9,7 +9,7 @@ export interface ICategoryResource extends Resource {
 export default class CategoryResource implements ICategoryResource {
     constructor(id: string, categoryAttributes: CategoryAttributes, relationships: CategoryRelationships) {
         this.id = id;
-        this.resourceType = 'categories'
+        this.type = 'categories'
         this.attributes = categoryAttributes;
         this.relationships = relationships
     }
@@ -17,5 +17,5 @@ export default class CategoryResource implements ICategoryResource {
     attributes: CategoryAttributes;
     id: string;
     relationships: CategoryRelationships;
-    resourceType: ResourceType;
+    type: ResourceType;
 }

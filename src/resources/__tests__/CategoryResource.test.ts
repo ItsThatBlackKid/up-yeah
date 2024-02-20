@@ -9,7 +9,7 @@ const mockRelationships: CategoryRelationships = {
     parent: {
         data: {
             id: 'mockid',
-            resourceType: 'categories'
+            type: 'categories'
         }
     },
     children: {
