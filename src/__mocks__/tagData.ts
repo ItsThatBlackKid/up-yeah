@@ -1,5 +1,5 @@
+import { GetTagsResponse, PostTagPayload, TagResponse } from '../client';
 import { TagRelationships } from '../resources/types';
-import { GetTagsResponse, TagResponse } from '../client';
 
 export const mockTagRelationships: TagRelationships = {
 	transactions: {
@@ -31,3 +31,8 @@ export const mockTagsResponse: GetTagsResponse = {
 		next: null,
 	},
 };
+
+export const mockTagPayload: PostTagPayload = {
+	type: 'tags',
+	id: 'queensland'
+}

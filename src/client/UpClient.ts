@@ -21,7 +21,7 @@ import {
 	GetAccountsResponse,
 	GetTagsResponse,
 	GetTransactionsQueryOptions,
-	ListTransactionResponse,
+	ListTransactionResponse, PostTagPayload,
 	TransactionStatus,
 	UpClientOptions,
 } from './types';
@@ -235,6 +235,18 @@ class UpClient {
 			throw this.buildAndThrowErrors(e);
 		}
 	};
+
+	public addTagsToTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
+		try {
+			const res = await this.clientInstance.post(`/transactions/${transactionId}/relationships/tags`, payload);
+			// tslint:disable-next-line:no-console
+			console.log(res);
+
+			return true;
+		} catch (e: any) {
+			throw this.buildAndThrowErrors(e);
+		}
+	}
 }
 
 export default UpClient;

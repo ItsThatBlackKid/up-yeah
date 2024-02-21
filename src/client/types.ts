@@ -111,6 +111,11 @@ export type TagResponse = {
 	relationships: TagRelationships;
 };
 
+export type PostTagPayload = {
+	type: 'tags',
+	id: string;
+}
+
 export type GetTagsResponse = {
 	data: TagResponse[];
 	links: ResponseLinks;

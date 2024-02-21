@@ -1,17 +1,17 @@
 import mockAxios from 'jest-mock-axios';
-import UpClient from '../UpClient';
-import AccountResource from '../../resources/Account/AccountResource';
-import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../../resources/types';
 import { IUpError } from '../../errors';
 import UpErrorCollection from '../../errors/UpErrorCollection';
-import { GetAccountsQueryOptions, GetTransactionsQueryOptions, TransactionStatus } from '../types';
-import TransactionResource from '../../resources/Transactions/TransactionResource';
-import { mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty } from '../../__mocks__/accountData';
-import { mockListTransactionsResponse, mockUpGetTransactionsEmpty } from '../../__mocks__/transactionData';
-import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
+import AccountResource from '../../resources/Account/AccountResource';
 import CategoryResource from '../../resources/Categories/CategoryResource';
-import { mockTagRelationships, mockTagsResponse } from '../../__mocks__/tagData';
 import TagResource from '../../resources/Tags/TagResource';
+import TransactionResource from '../../resources/Transactions/TransactionResource';
+import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../../resources/types';
+import { mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty } from '../../__mocks__/accountData';
+import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
+import { mockTagPayload, mockTagRelationships, mockTagsResponse } from '../../__mocks__/tagData';
+import { mockListTransactionsResponse, mockUpGetTransactionsEmpty } from '../../__mocks__/transactionData';
+import { GetAccountsQueryOptions, GetTransactionsQueryOptions, TransactionStatus } from '../types';
+import UpClient from '../UpClient';
 
 let client: UpClient;
 describe('Up Client', () => {
@@ -477,5 +477,63 @@ describe('Up Client', () => {
 				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
 			});
 		});
+
+		describe('addTagToTransaction', () => {
+			it('should make patch call to /transactions/{transactionId}/relationships/tags', async () => {
+				mockAxios.post.mockResolvedValue(true);
+				await client.addTagsToTransaction('xyz',  [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing'
+					}
+				]);
+
+				expect(mockAxios.post).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing'
+					}
+				]);
+			})
+
+			it('should return true on success', async () => {
+				mockAxios.post.mockResolvedValue(true);
+
+				const val = await client.addTagsToTransaction('xyz',  [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing'
+					}
+				]);
+
+				expect(val).toEqual(true);
+			});
+
+			it('should throw UpErrorCollection if api returns an error', async () => {
+				const mockUpError: IUpError = {
+					status: '400',
+					title: 'Bad request',
+					detail: 'Some of the information provided is invalid',
+					source: {
+						parameter: 'x',
+						pointer: '0',
+					},
+				};
+				mockAxios.post.mockRejectedValue({
+					response: {
+						data: {
+							errors: [mockUpError],
+						},
+					},
+				});
+
+				await expect(async () => {
+					await client.addTagsToTransaction('xyz', []);
+				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
+			});
+		})
 	});
 });
