@@ -1,1 +1,1 @@
-export * from './AccountResource'
+export * from './AccountResource';
