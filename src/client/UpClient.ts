@@ -4,7 +4,16 @@
  */
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import UpError from '../errors/UpError';
+import UpErrorCollection from '../errors/UpErrorCollection';
 import AccountResource from '../resources/Account/AccountResource';
+import CategoryResource from '../resources/Categories/CategoryResource';
+import ResourceCollection from '../resources/Resource/ResourceCollection';
+import TagResource from '../resources/Tags/TagResource';
+import TransactionResource from '../resources/Transactions/TransactionResource';
+import { AccountTypeEnum, OwnershipTypeEnum } from '../resources/types';
+import { buildAccounts, buildTransactions } from '../utils';
+import { buildCategories, buildCategory } from '../utils/buildResources/buildCategories';
 import {
 	ErrorObject,
 	GetAccountResponse,
@@ -16,15 +25,6 @@ import {
 	TransactionStatus,
 	UpClientOptions,
 } from './types';
-import { AccountTypeEnum, OwnershipTypeEnum } from '../resources/types';
-import UpError from '../errors/UpError';
-import UpErrorCollection from '../errors/UpErrorCollection';
-import TransactionResource from '../resources/Transactions/TransactionResource';
-import { buildAccounts, buildTransactions } from '../utils';
-import ResourceCollection from '../resources/Resource/ResourceCollection';
-import CategoryResource from '../resources/Categories/CategoryResource';
-import { buildCategories, buildCategory } from '../utils/buildResources/buildCategories';
-import TagResource from '../resources/Tags/TagResource';
 
 interface GetAccountsQueryParams {
 	'page[size]'?: number;

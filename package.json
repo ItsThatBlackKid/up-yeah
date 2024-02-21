@@ -8,6 +8,7 @@
     "build": "tsc",
     "clean": "rm -rf ./lib",
     "lint": "tslint -p tsconfig.json",
+    "lint:fix": "tslint --fix -p tsconfig.json",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
   },
   "keywords": [

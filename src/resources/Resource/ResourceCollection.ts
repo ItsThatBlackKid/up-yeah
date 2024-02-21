@@ -1,11 +1,11 @@
-import AccountResource from '../Account/AccountResource';
-import TransactionResource from '../Transactions/TransactionResource';
-import { Maybe, ResourceResponse, ResponseLinks } from '../../types';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { ErrorObject, GetAccountsResponse, ListTransactionResponse } from '../../client';
-import { buildAccounts, buildTransactions } from '../../utils';
 import UpError from '../../errors/UpError';
 import UpErrorCollection from '../../errors/UpErrorCollection';
+import { Maybe, ResourceResponse, ResponseLinks } from '../../types';
+import { buildAccounts, buildTransactions } from '../../utils';
+import AccountResource from '../Account/AccountResource';
+import TransactionResource from '../Transactions/TransactionResource';
 import Resource from './Resource';
 
 interface IResourceLink<T extends Resource> {

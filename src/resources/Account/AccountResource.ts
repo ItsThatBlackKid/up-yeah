@@ -1,6 +1,6 @@
+import { AccountRelationships } from '../../types';
 import Resource, { IResource } from '../Resource/Resource';
 import { AccountAttributes, AccountTypeEnum, MoneyObject, OwnershipTypeEnum } from '../types';
-import { AccountRelationships } from '../../types';
 
 export interface IAccountResource extends IResource {
 	accountType: AccountTypeEnum;

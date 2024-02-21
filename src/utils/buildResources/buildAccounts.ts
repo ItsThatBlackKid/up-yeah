@@ -1,5 +1,5 @@
-import AccountResource from '../../resources/Account/AccountResource';
 import { AccountResourceResponse } from '../../client';
+import AccountResource from '../../resources/Account/AccountResource';
 import { AccountTypeEnum, OwnershipTypeEnum } from '../../resources/types';
 
 export const buildAccount = (account: AccountResourceResponse): AccountResource => {

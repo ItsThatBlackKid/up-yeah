@@ -1,6 +1,6 @@
 import { IResource } from '../Resource';
-import { TagRelationships } from '../types';
 import Resource from '../Resource/Resource';
+import { TagRelationships } from '../types';
 
 interface ITagResource extends IResource {
 	relationships: TagRelationships;
