@@ -1,1 +1,1 @@
-export * from './buildResources'
+export * from './buildResources';
