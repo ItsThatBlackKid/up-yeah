@@ -49,5 +49,4 @@ jobs:
           draft: false
           makeLatest: true
           name: ${{steps.semver.outputs.next}}
-          body: "Changelog"
           token: ${{github.token}}
