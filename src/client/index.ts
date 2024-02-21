@@ -1,2 +1,2 @@
-export * from './UpClient'
-export * from './types'
+export * from './UpClient';
+export * from './types';

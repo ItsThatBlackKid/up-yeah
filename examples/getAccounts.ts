@@ -1,10 +1,8 @@
 import UpClient from "../lib/client/UpClient";
 import {GetAccountsQueryOptions, GetTransactionsQueryOptions} from "../lib/client/types";
 import {OwnershipTypeEnum} from "../lib/resources/types";
+import {client} from './client';
 
-const client = new UpClient({
-    personalAccessToken: process.env.UP_TOKEN as string
-})
 
 const getAccounts = async () => {
     const accountCollection = await client.getAccounts();

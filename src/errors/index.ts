@@ -1,3 +1,3 @@
-export * from './types'
-export * from './UpError'
-export * from './UpErrorCollection'
+export * from './types';
+export * from './UpError';
+export * from './UpErrorCollection';
