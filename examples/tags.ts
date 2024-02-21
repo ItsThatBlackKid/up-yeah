@@ -8,9 +8,19 @@ const getTags = async () => {
 	})
 }
 
+const tagTransaction = async () => {
+	const transactions = await client.getTransactions();
+	const {id} = transactions.resources[0];
+
+	const sucess = await client.addTagsToTransaction(id, [
+		{
+			type: 'tags',
+			id: 'random'
+		}
+	])
+}
+
 (async () => {
+	await tagTransaction();
 	await getTags()
-	// await getAccountsPagination()
-	// await getAccounts();
-	// await getAccountsWithOptions();
 })();

@@ -10,7 +10,7 @@ import { mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty
 import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
 import { mockTagPayload, mockTagRelationships, mockTagsResponse } from '../../__mocks__/tagData';
 import { mockListTransactionsResponse, mockUpGetTransactionsEmpty } from '../../__mocks__/transactionData';
-import { GetAccountsQueryOptions, GetTransactionsQueryOptions, TransactionStatus } from '../types';
+import { GetAccountsQueryOptions, GetTransactionsQueryOptions, PostTagPayload, TransactionStatus } from '../types';
 import UpClient from '../UpClient';
 
 let client: UpClient;
@@ -479,38 +479,60 @@ describe('Up Client', () => {
 		});
 
 		describe('addTagToTransaction', () => {
-			it('should make patch call to /transactions/{transactionId}/relationships/tags', async () => {
-				mockAxios.post.mockResolvedValue(true);
-				await client.addTagsToTransaction('xyz',  [
+			it('should make POST call to /transactions/{transactionId}/relationships/tags', async () => {
+				mockAxios.post.mockResolvedValue({
+					status: 204
+				});
+				await client.addTagsToTransaction('xyz', [
 					mockTagPayload,
 					{
 						type: 'tags',
-						id: 'fishing'
-					}
+						id: 'fishing',
+					},
 				]);
 
-				expect(mockAxios.post).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', [
-					mockTagPayload,
-					{
-						type: 'tags',
-						id: 'fishing'
-					}
-				]);
-			})
+				expect(mockAxios.post).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', {
+					data: [
+						mockTagPayload,
+						{
+							type: 'tags',
+							id: 'fishing',
+						},
+					],
+				});
+			});
 
 			it('should return true on success', async () => {
-				mockAxios.post.mockResolvedValue(true);
+				mockAxios.post.mockResolvedValue({
+					status: 204
+				});
 
-				const val = await client.addTagsToTransaction('xyz',  [
+				const val = await client.addTagsToTransaction('xyz', [
 					mockTagPayload,
 					{
 						type: 'tags',
-						id: 'fishing'
-					}
+						id: 'fishing',
+					},
 				]);
 
 				expect(val).toEqual(true);
 			});
+
+			it('should return false if receive status other than 204', async () => {
+				mockAxios.post.mockResolvedValue({
+					status: 200
+				});
+
+				const val = await client.addTagsToTransaction('xyz', [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing',
+					},
+				]);
+
+				expect(val).toEqual(false);
+			})
 
 			it('should throw UpErrorCollection if api returns an error', async () => {
 				const mockUpError: IUpError = {
@@ -534,6 +556,85 @@ describe('Up Client', () => {
 					await client.addTagsToTransaction('xyz', []);
 				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
 			});
-		})
+		});
+
+		describe('removeTagsFromTransaction', () => {
+			it('should make delete call to /transactions/{transactionId}/relationships/tags', async () => {
+				mockAxios.delete.mockResolvedValue({
+					status: 200
+				});
+				const payload: PostTagPayload[] = [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing',
+					},
+				];
+				await client.removeTagsFromTransaction('xyz', payload);
+
+				expect(mockAxios.delete).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', expect.objectContaining({
+					data: expect.objectContaining({
+						data: payload
+					}),
+				}));
+			});
+
+			it('should return true on success', async () => {
+				mockAxios.delete.mockResolvedValue({
+					status: 204
+				});
+
+				const val = await client.removeTagsFromTransaction('xyz', [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing',
+					},
+				]);
+
+				expect(val).toEqual(true);
+			});
+
+			it('should return false if receive status other than 204', async () => {
+				mockAxios.delete.mockResolvedValue({
+					status: 200
+				});
+
+				const val = await client.removeTagsFromTransaction('xyz', [
+					mockTagPayload,
+					{
+						type: 'tags',
+						id: 'fishing',
+					},
+				]);
+
+				expect(val).toEqual(false);
+			})
+
+			it('should throw UpErrorCollection if api returns an error', async () => {
+				const mockUpError: IUpError = {
+					status: '400',
+					title: 'Bad request',
+					detail: 'Some of the information provided is invalid',
+					source: {
+						parameter: 'x',
+						pointer: '0',
+					},
+				};
+				mockAxios.delete.mockRejectedValue({
+					response: {
+						data: {
+							errors: [mockUpError],
+						},
+					},
+				});
+
+				await expect(async () => {
+					await client.removeTagsFromTransaction('xyz', []);
+				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
+			});
+
+
+		});
 	});
 });

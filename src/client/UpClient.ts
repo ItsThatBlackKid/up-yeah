@@ -238,11 +238,27 @@ class UpClient {
 
 	public addTagsToTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
 		try {
-			const res = await this.clientInstance.post(`/transactions/${transactionId}/relationships/tags`, payload);
+			const res = await this.clientInstance.post(`/transactions/${transactionId}/relationships/tags`, {
+				data: payload
+			});
 			// tslint:disable-next-line:no-console
 			console.log(res);
 
-			return true;
+			return res.status === 204;
+		} catch (e: any) {
+			throw this.buildAndThrowErrors(e);
+		}
+	}
+
+	public removeTagsFromTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
+		try {
+			const res = await this.clientInstance.delete(`/transactions/${transactionId}/relationships/tags`, {
+				data: {
+					data: payload
+				}
+			});
+
+			return res.status === 204;
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
