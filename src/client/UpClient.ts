@@ -21,7 +21,8 @@ import {
 	GetAccountsResponse,
 	GetTagsResponse,
 	GetTransactionsQueryOptions,
-	ListTransactionResponse, PostTagPayload,
+	ListTransactionResponse,
+	PostTagPayload,
 	TransactionStatus,
 	UpClientOptions,
 } from './types';
@@ -174,18 +175,16 @@ class UpClient {
 		}
 	}
 
-	public getTransactions = async (
-		options?: GetTransactionsQueryOptions,
-	): Promise<ResourceCollection<TransactionResource>> => {
+	private makeTransactionsGetCall = async (url: string, options?: GetTransactionsQueryOptions) => {
 		try {
 			let listResponse;
 			if (options) {
 				const params = this.buildTransactionQueryParams(options);
-				listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions', {
+				listResponse = await this.clientInstance.get<ListTransactionResponse>(url, {
 					params,
 				});
 			} else {
-				listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions');
+				listResponse = await this.clientInstance.get<ListTransactionResponse>(url);
 			}
 			const transactionData = listResponse.data;
 
@@ -199,6 +198,16 @@ class UpClient {
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
+	};
+
+	public getTransactions = async (
+		options?: GetTransactionsQueryOptions,
+	): Promise<ResourceCollection<TransactionResource>> => {
+		return this.makeTransactionsGetCall('/transactions', options);
+	};
+
+	public getTransactionsByAccount = async (accountId: string, options?: GetTransactionsQueryOptions): Promise<ResourceCollection<TransactionResource>> => {
+		return this.makeTransactionsGetCall(`/accounts/${accountId}/transactions`, options);
 	};
 
 	public getCategories = async (): Promise<ResourceCollection<CategoryResource>> => {
@@ -239,7 +248,7 @@ class UpClient {
 	public addTagsToTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
 		try {
 			const res = await this.clientInstance.post(`/transactions/${transactionId}/relationships/tags`, {
-				data: payload
+				data: payload,
 			});
 			// tslint:disable-next-line:no-console
 			console.log(res);
@@ -248,21 +257,21 @@ class UpClient {
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
-	}
+	};
 
 	public removeTagsFromTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
 		try {
 			const res = await this.clientInstance.delete(`/transactions/${transactionId}/relationships/tags`, {
 				data: {
-					data: payload
-				}
+					data: payload,
+				},
 			});
 
 			return res.status === 204;
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
-	}
+	};
 }
 
 export default UpClient;

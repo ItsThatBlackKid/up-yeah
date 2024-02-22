@@ -69,8 +69,18 @@ const getAccountsPagination = async () => {
     })
 }
 
+const getTransactionsByAccount = async () => {
+    const accounts = await client.getAccounts();
+    const acc0 = accounts.resources[0];
+
+    const transactions = await client.getTransactionsByAccount(acc0.id);
+
+    transactions.resources.forEach(transaction => console.log(JSON.stringify(transaction, null, 2)))
+}
+
 (async () => {
-    await getTransactionsWithOptions();
+    getTransactionsByAccount()
+    // await getTransactionsWithOptions();
     // await getAccountsPagination()
     // await getAccounts();
     // await getAccountsWithOptions();

@@ -259,6 +259,30 @@ describe('Up Client', () => {
 				});
 			});
 		});
+		describe('getTransactionsByAccount', () => {
+			it('should make GET call to /accounts/{accountId}/transactions', async () => {
+				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
+				const expectedTransaction: TransactionResource = {
+					amount: {
+						currencyCode: 'AUD',
+						value: '4.20',
+						valueInBaseUnits: 420,
+					},
+					createdAt: new Date('2023-07-18T07:44:17+10:00'),
+					description: 'This is a transaction',
+					id: 'mockId',
+					isCategorizable: false,
+					relationships: {
+						account: {},
+					},
+					type: 'transactions',
+					status: TransactionStatusEnum.SETTLED,
+				};
+
+				const transactions = await client.getTransactionsByAccount('xyz');
+				expect(transactions.resources).toEqual(expect.arrayContaining([expectedTransaction]));
+			})
+		})
 	});
 
 	describe('Categories', () => {
