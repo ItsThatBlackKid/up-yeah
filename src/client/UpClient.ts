@@ -3,7 +3,7 @@
  * Axios client to handle HTTP requests to the Up API
  */
 
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, {Axios, AxiosResponse} from 'axios';
 import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
 import AccountResource from '../resources/Account/AccountResource';
@@ -11,9 +11,9 @@ import CategoryResource from '../resources/Categories/CategoryResource';
 import ResourceCollection from '../resources/Resource/ResourceCollection';
 import TagResource from '../resources/Tags/TagResource';
 import TransactionResource from '../resources/Transactions/TransactionResource';
-import { AccountTypeEnum, OwnershipTypeEnum } from '../resources/types';
-import { buildAccounts, buildTransactions } from '../utils';
-import { buildCategories, buildCategory } from '../utils/buildResources/buildCategories';
+import {AccountTypeEnum, OwnershipTypeEnum} from '../resources/types';
+import {buildAccounts, buildTags, buildTransactions} from '../utils';
+import {buildCategories, buildCategory} from '../utils/buildResources/buildCategories';
 import {
 	ErrorObject,
 	GetAccountResponse,
@@ -43,7 +43,7 @@ interface GetTransactionsQueryParams {
 }
 
 class UpClient {
-	private readonly clientInstance: AxiosInstance;
+	private readonly clientInstance: Axios;
 
 	/**
 	 * Creates axios client instance with relevant options to the Up API
@@ -61,7 +61,7 @@ class UpClient {
 	/**
 	 * Getter for the clientInstance property.
 	 */
-	getClientInstance(): AxiosInstance {
+	getClientInstance(): Axios {
 		return this.clientInstance;
 	}
 
@@ -239,7 +239,7 @@ class UpClient {
 			const res = await this.clientInstance.get<GetTagsResponse>('/tags');
 			const tagData = res.data;
 
-			return new ResourceCollection<TagResource>(tagData.data, tagData.links, this.clientInstance);
+			return new ResourceCollection<TagResource>(buildTags(tagData.data), tagData.links, this.clientInstance);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}

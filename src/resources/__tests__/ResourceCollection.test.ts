@@ -1,12 +1,12 @@
-import mockAxios from '../../__mocks__/axios';
-import ResourceCollection from '../Resource/ResourceCollection';
-import { AxiosInstance } from 'axios';
-import AccountResource from '../Account/AccountResource';
+import { Axios, AxiosInstance } from 'axios';
 import { ResponseLinks } from '../../types';
 import { mockUpAccountsResponse } from '../../__mocks__/accountData';
-import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../types';
+import mockAxios from '../../__mocks__/axios';
 import { mockListTransactionsMultiResponse } from '../../__mocks__/transactionData';
+import AccountResource from '../Account/AccountResource';
+import ResourceCollection from '../Resource/ResourceCollection';
 import TransactionResource from '../Transactions/TransactionResource';
+import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../types';
 
 describe('ResourceLink', () => {
 	it('should set prevLink and nextLink when constructed', () => {
@@ -51,7 +51,7 @@ describe('ResourceLink', () => {
 
 			expect(await collection.next()).toEqual(null);
 		});
-		it('should return next set of resources  on success', async () => {
+		it('should return next set of account resources if available', async () => {
 			mockAxios.get.mockResolvedValue({
 				data: mockUpAccountsResponse,
 			});
@@ -62,7 +62,7 @@ describe('ResourceLink', () => {
 					prev: null,
 					next: 'http://some.up.au/api/v1/account/endpoint/1',
 				},
-				mockAxios as unknown as AxiosInstance,
+				mockAxios as unknown as Axios,
 			);
 
 			await collection.next();
@@ -87,7 +87,30 @@ describe('ResourceLink', () => {
 				},
 			);
 
-			expect(collection.resources).toEqual([expectedAccountResource]);
+			const expectedAccountResource2 = new AccountResource(
+				'mockId2',
+				{
+					displayName: '2Up',
+					accountType: AccountTypeEnum.TRANSACTIONAL,
+					balance: {
+						currencyCode: 'AUD',
+						value: '4.20',
+						valueInBaseUnits: 420,
+					},
+					createdAt: new Date('2021-09-23T01:12:00+10:00'),
+					ownershipType: OwnershipTypeEnum.JOINT,
+				},
+				{
+					transactions: {
+						data: [],
+					},
+				},
+			);
+
+			//see the jest issue #8475: https://github.com/jestjs/jest/issues/8475
+			expect(JSON.stringify(collection.resources)).toEqual(
+				JSON.stringify([expectedAccountResource, expectedAccountResource2]),
+			);
 		});
 
 		it('should return next set of transaction resources if available', async () => {
@@ -105,7 +128,7 @@ describe('ResourceLink', () => {
 			await collection.next();
 
 			const expectedTransactions = [
-				{
+				expect.objectContaining({
 					amount: {
 						currencyCode: 'AUD',
 						value: '4.20',
@@ -120,8 +143,9 @@ describe('ResourceLink', () => {
 					},
 					type: 'transactions',
 					status: TransactionStatusEnum.SETTLED,
-				},
-				{
+				}),
+
+				expect.objectContaining({
 					amount: {
 						currencyCode: 'AUD',
 						value: '6.9',
@@ -136,7 +160,7 @@ describe('ResourceLink', () => {
 						account: {},
 					},
 					type: 'transactions',
-				},
+				}),
 			];
 
 			expect(collection.resources).toEqual(expect.arrayContaining(expectedTransactions));

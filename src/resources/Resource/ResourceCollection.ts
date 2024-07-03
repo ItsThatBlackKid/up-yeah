@@ -1,9 +1,9 @@
-import { AxiosInstance, AxiosResponse } from 'axios';
-import { ErrorObject, GetAccountsResponse, ListTransactionResponse } from '../../client';
+import {Axios, AxiosResponse} from 'axios';
+import {ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../../client';
 import UpError from '../../errors/UpError';
 import UpErrorCollection from '../../errors/UpErrorCollection';
-import { Maybe, ResourceResponse, ResponseLinks } from '../../types';
-import { buildAccounts, buildTransactions } from '../../utils';
+import {Maybe, ResourceResponse, ResponseLinks} from '../../types';
+import {buildAccounts, buildTransactions} from '../../utils';
 import AccountResource from '../Account/AccountResource';
 import TransactionResource from '../Transactions/TransactionResource';
 import Resource from './Resource';
@@ -13,11 +13,15 @@ interface IResourceLink<T extends Resource> {
 	next: () => Promise<Maybe<T[]>>;
 }
 export default class ResourceCollection<T extends Resource> implements IResourceLink<T> {
-	private client: AxiosInstance;
+	private client: Axios;
 	prevLink: Maybe<string>;
 	nextLink: Maybe<string>;
 	resources: T[];
-	constructor(resources: T[], links: ResponseLinks, client: AxiosInstance) {
+	constructor(resources: T[], links: ResponseLinks, client: Axios) {
+		this.resources = resources.map(resource => {
+			resource.setClient(client);
+			return resource;
+		})
 		this.resources = resources;
 		this.prevLink = links.prev;
 		this.nextLink = links.next;

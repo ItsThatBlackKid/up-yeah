@@ -73,9 +73,9 @@ const getTransactionsByAccount = async () => {
     const accounts = await client.getAccounts();
     const acc0 = accounts.resources[0];
 
-    const transactions = await client.getTransactionsByAccount(acc0.id);
+    const transactions = await acc0.getTransactions();
 
-    transactions.resources.forEach(transaction => console.log(JSON.stringify(transaction, null, 2)))
+    transactions!.resources.forEach(transaction => console.log(JSON.stringify(transaction, null, 2)))
 }
 
 (async () => {
