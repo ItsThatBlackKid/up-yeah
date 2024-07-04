@@ -19,6 +19,10 @@ import {
 } from '../../resources/types';
 import UpClient from '../UpClient';
 import { GetAccountsQueryOptions, GetTransactionsQueryOptions, PostTagPayload, TransactionStatus } from '../types';
+import { buildAccountGetParams, buildTransactionQueryParams } from '../../utils/buildParams';
+
+
+jest.mock('../../utils/buildParams/');
 
 let client: UpClient;
 describe('Up Client', () => {
@@ -60,6 +64,7 @@ describe('Up Client', () => {
 
 			it('should pass query params to get call', async () => {
 				mockAxios.get.mockResolvedValue(mockUpListAccountsEmpty);
+				(buildAccountGetParams as jest.Mock).mockReturnValue({mockParam: 'yo'})
 
 				const options: GetAccountsQueryOptions = {
 					pageSize: 10,
@@ -68,12 +73,10 @@ describe('Up Client', () => {
 				};
 
 				await client.getAccounts(options);
-
+				expect(buildAccountGetParams).toHaveBeenCalled();
 				expect(mockAxios.get).toHaveBeenCalledWith('/accounts', {
 					params: {
-						'page[size]': options.pageSize,
-						'filter[accountType]': options.filterAccType,
-						'filter[ownershipType]': options.filterAccOwnershipType,
+						mockParam: 'yo'
 					},
 				});
 			});
@@ -195,6 +198,23 @@ describe('Up Client', () => {
 				expect(transactions).toBeInstanceOf(ResourceCollection<TransactionResource>);
 			});
 
+			it('should pass query params to get call', async () => {
+				mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
+
+				const options: GetTransactionsQueryOptions = {
+					pageSize: 10,
+					filterStatus: TransactionStatus.HELD,
+					filterSince: '2020-01-01T01:02:03+10:00',
+					filterUntil: '2023-01-01T01:02:03+10:00',
+					filterCategory: 'good-life',
+					filterTag: 'Holiday',
+				};
+
+
+				await client.getTransactions(options);
+				expect(buildTransactionQueryParams).toHaveBeenCalledWith(options);
+			});
+
 			it('should throw UpErrorCollection if API errors', async () => {
 				const mockUpError: IUpError = {
 					status: '400',
@@ -216,31 +236,6 @@ describe('Up Client', () => {
 				await expect(async () => {
 					await client.getTransactions();
 				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
-			});
-
-			it('should pass query params to get call', async () => {
-				mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
-
-				const options: GetTransactionsQueryOptions = {
-					pageSize: 10,
-					filterStatus: TransactionStatus.HELD,
-					filterSince: '2020-01-01T01:02:03+10:00',
-					filterUntil: '2023-01-01T01:02:03+10:00',
-					filterCategory: 'good-life',
-					filterTag: 'Holiday',
-				};
-
-				await client.getTransactions(options);
-				expect(mockAxios.get).toHaveBeenCalledWith('/transactions', {
-					params: {
-						'page[size]': options.pageSize,
-						'filter[status]': options.filterStatus,
-						'filter[since]': options.filterSince,
-						'filter[until]': options.filterUntil,
-						'filter[category]': options.filterCategory,
-						'filter[tag]': options.filterTag,
-					},
-				});
 			});
 		});
 		describe('getTransactionsByAccount', () => {
