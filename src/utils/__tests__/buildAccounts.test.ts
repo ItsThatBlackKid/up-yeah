@@ -2,9 +2,12 @@ import AccountResource from '../../resources/Account/AccountResource';
 import { AccountTypeEnum, OwnershipTypeEnum } from '../../resources/types';
 import { buildAccount, buildAccounts } from '../buildResources';
 import { mockAccountResponse, mockUpAccountsResponse } from '../../__mocks__/accountData';
+import mockAxios from '../../__mocks__/axios';
+import { Axios } from 'axios';
 
 describe('buildAccounts', () => {
 	it('should build AccountResource correctly', () => {
+		AccountResource.prototype.setClient = jest.fn();
 		const account = buildAccount(mockAccountResponse);
 		const expectedAccountResource = new AccountResource(
 			'mockId',
@@ -26,7 +29,9 @@ describe('buildAccounts', () => {
 			},
 		);
 
-		expect(JSON.stringify(account)).toEqual(JSON.stringify(expectedAccountResource));
+
+		expect(account).toMatchObject(expectedAccountResource);
+		expect(account).toBeInstanceOf(AccountResource);
 	});
 
 	it('should build accounts', () => {
@@ -73,6 +78,6 @@ describe('buildAccounts', () => {
 		);
 
 		//see the jest issue #8475: https://github.com/jestjs/jest/issues/8475
-		expect(JSON.stringify(accounts)).toEqual(JSON.stringify([expectedAccountResource, expectedAccountResource2]));
+		expect(accounts).toEqual([expectedAccountResource, expectedAccountResource2]);
 	});
 });

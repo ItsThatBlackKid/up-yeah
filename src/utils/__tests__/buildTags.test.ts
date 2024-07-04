@@ -1,6 +1,7 @@
 import { buildTag, buildTags } from '../buildResources';
 import { mockTagRelationships, mockTags } from '../../__mocks__/tagData';
 import TagResource from '../../resources/Tags/TagResource';
+import {Axios} from 'axios'
 
 describe('buildTags.ts', () => {
 	describe('buildTag', () => {
@@ -19,21 +20,11 @@ describe('buildTags.ts', () => {
 			const builtTags = buildTags(mockTags);
 
 			const expectedTags: TagResource[] = [
-				{
-					type: 'tags',
-					id: 'Pizza Night',
-					relationships: mockTagRelationships,
-				},
-				{
-					type: 'tags',
-					id: 'Holiday',
-					relationships: {
-						transactions: null,
-					},
-				},
+				new TagResource('Pizza Night', mockTagRelationships),
+				new TagResource('Holiday', {transactions: null})
 			];
 
-			expect(builtTags).toEqual(expect.arrayContaining(expectedTags));
+			expect(builtTags).toEqual(expectedTags);
 		});
 	});
 });

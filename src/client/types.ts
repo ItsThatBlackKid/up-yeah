@@ -13,6 +13,22 @@ import {
 } from '../resources/types';
 import { AccountRelationships, ResourceLink, ResponseLinks } from '../types';
 
+
+export interface GetAccountsQueryParams {
+	'page[size]'?: number;
+	'filter[accountType]'?: AccountTypeEnum;
+	'filter[ownershipType]'?: OwnershipTypeEnum;
+}
+
+export interface GetTransactionsQueryParams {
+	'page[size]'?: number;
+	'filter[status]'?: TransactionStatus;
+	'filter[since]'?: string;
+	'filter[until]'?: string;
+	'filter[category]'?: string;
+	'filter[tag]'?: string;
+}
+
 export type UpClientOptions = {
 	personalAccessToken: string;
 };
@@ -51,6 +67,7 @@ export type TransactionAttributesResponse = {
 	createdAt: string;
 };
 
+
 export type TransactionResponse = {
 	type: string;
 	id: string;
@@ -73,6 +90,7 @@ export type GetAccountResponse = {
 	data: AccountResourceResponse;
 	links: ResponseLinks;
 };
+
 
 export type GetAccountsQueryOptions = {
 	pageSize?: number;

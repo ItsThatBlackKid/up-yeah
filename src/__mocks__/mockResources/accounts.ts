@@ -33,14 +33,3 @@ export const mockAccountResource2 = new AccountResource(
     mockAccountAttributes,
     mockAccountRelationships
 );
-
-const createMockAccount = (id: string, attributes: AccountAttributes, relationships: AccountRelationships) => {
-    return new AccountResource(id, attributes, relationships);
-}
-
-const createMockAccounts = (override: [AccountResource]): AccountResource[] => {
-    return [
-        mockAccountResource,
-        mockAccountResource2
-    ]
-}

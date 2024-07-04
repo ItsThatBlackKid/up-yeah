@@ -3,7 +3,7 @@
  * Axios client to handle HTTP requests to the Up API
  */
 
-import axios, {Axios, AxiosResponse} from 'axios';
+import axios, { Axios, AxiosResponse } from 'axios';
 import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
 import AccountResource from '../resources/Account/AccountResource';
@@ -11,36 +11,25 @@ import CategoryResource from '../resources/Categories/CategoryResource';
 import ResourceCollection from '../resources/Resource/ResourceCollection';
 import TagResource from '../resources/Tags/TagResource';
 import TransactionResource from '../resources/Transactions/TransactionResource';
-import {AccountTypeEnum, OwnershipTypeEnum} from '../resources/types';
-import {buildAccounts, buildTags, buildTransactions} from '../utils';
-import {buildCategories, buildCategory} from '../utils/buildResources/buildCategories';
+import { AccountTypeEnum, OwnershipTypeEnum } from '../resources/types';
+import { buildAccounts, buildTags, buildTransactions } from '../utils';
+import {
+	buildCategories,
+	buildCategory,
+} from '../utils/buildResources/buildCategories';
 import {
 	ErrorObject,
 	GetAccountResponse,
 	GetAccountsQueryOptions,
+	GetAccountsQueryParams,
 	GetAccountsResponse,
 	GetTagsResponse,
 	GetTransactionsQueryOptions,
+	GetTransactionsQueryParams,
 	ListTransactionResponse,
 	PostTagPayload,
-	TransactionStatus,
-	UpClientOptions,
+	UpClientOptions
 } from './types';
-
-interface GetAccountsQueryParams {
-	'page[size]'?: number;
-	'filter[accountType]'?: AccountTypeEnum;
-	'filter[ownershipType]'?: OwnershipTypeEnum;
-}
-
-interface GetTransactionsQueryParams {
-	'page[size]'?: number;
-	'filter[status]'?: TransactionStatus;
-	'filter[since]'?: string;
-	'filter[until]'?: string;
-	'filter[category]'?: string;
-	'filter[tag]'?: string;
-}
 
 class UpClient {
 	private readonly clientInstance: Axios;
@@ -50,12 +39,13 @@ class UpClient {
 	 * @param options Options for the client
 	 */
 	constructor(options: UpClientOptions) {
-		this.clientInstance = axios.create({
+			this.clientInstance = axios.create({
 			baseURL: 'https://api.up.com.au/api/v1',
 			headers: {
 				Authorization: `Bearer  ${options.personalAccessToken}`,
 			},
-		});
+
+		})
 	}
 
 	/**
@@ -65,7 +55,9 @@ class UpClient {
 		return this.clientInstance;
 	}
 
-	private buildQueryParams = (options?: GetAccountsQueryOptions): GetAccountsQueryParams | undefined => {
+	private buildQueryParams = (
+		options?: GetAccountsQueryOptions,
+	): GetAccountsQueryParams | undefined => {
 		if (!options) return undefined;
 
 		const params: GetAccountsQueryParams = {};
@@ -85,7 +77,9 @@ class UpClient {
 		return params;
 	};
 
-	private buildTransactionQueryParams = (options: GetTransactionsQueryOptions): GetTransactionsQueryParams => {
+	private buildTransactionQueryParams = (
+		options: GetTransactionsQueryOptions,
+	): GetTransactionsQueryParams => {
 		const params: GetTransactionsQueryParams = {};
 
 		if (options.pageSize) {
@@ -121,33 +115,47 @@ class UpClient {
 
 		if (errors) {
 			errors.forEach(err => {
-				collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
+				collectedErrors.push(
+					new UpError(err.status, err.title, err.detail, err.source),
+				);
 			});
 		}
 
 		throw new UpErrorCollection(collectedErrors);
 	};
 
-	public getAccounts = async (options?: GetAccountsQueryOptions): Promise<ResourceCollection<AccountResource>> => {
+	public getAccounts = async (
+		options?: GetAccountsQueryOptions,
+	): Promise<ResourceCollection<AccountResource>> => {
 		try {
 			let reqData: AxiosResponse<GetAccountsResponse> | undefined;
 
 			const params = this.buildQueryParams(options);
 
 			if (params) {
-				reqData = await this.clientInstance.get<GetAccountsResponse>('/accounts', {
-					params,
-				});
+				reqData = await this.clientInstance.get<GetAccountsResponse>(
+					'/accounts',
+					{
+						params,
+					},
+				);
 			} else {
-				reqData = await this.clientInstance.get<GetAccountsResponse>('/accounts');
+				reqData = await this.clientInstance.get<GetAccountsResponse>(
+					'/accounts',
+				);
 			}
 
 			const responseData = reqData.data;
 			const accounts = responseData.data;
 
-			const convertedAccounts: AccountResource[] = buildAccounts(accounts);
+			const convertedAccounts: AccountResource[] =
+				buildAccounts(accounts);
 
-			return new ResourceCollection<AccountResource>(convertedAccounts, responseData.links, this.clientInstance);
+			return new ResourceCollection<AccountResource>(
+				convertedAccounts,
+				responseData.links,
+				this.clientInstance,
+			);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
@@ -155,14 +163,20 @@ class UpClient {
 
 	async getAccount(id: string): Promise<AccountResource | undefined> {
 		try {
-			const data = (await this.clientInstance.get<GetAccountResponse>(`/account/${id}`)).data;
+			const data = (
+				await this.clientInstance.get<GetAccountResponse>(
+					`/account/${id}`,
+				)
+			).data;
 			const account = data.data;
-			const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType as OwnershipTypeEnum;
+			const ownerShipType: OwnershipTypeEnum = account.attributes
+				.ownershipType as OwnershipTypeEnum;
 
 			return new AccountResource(
 				account.id,
 				{
-					accountType: account.attributes.accountType as AccountTypeEnum,
+					accountType: account.attributes
+						.accountType as AccountTypeEnum,
 					balance: account.attributes.balance,
 					createdAt: new Date(account.attributes.createdAt),
 					displayName: account.attributes.displayName,
@@ -175,16 +189,24 @@ class UpClient {
 		}
 	}
 
-	private makeTransactionsGetCall = async (url: string, options?: GetTransactionsQueryOptions) => {
+	private makeTransactionsGetCall = async (
+		url: string,
+		options?: GetTransactionsQueryOptions,
+	) => {
 		try {
 			let listResponse;
 			if (options) {
 				const params = this.buildTransactionQueryParams(options);
-				listResponse = await this.clientInstance.get<ListTransactionResponse>(url, {
-					params,
-				});
+				listResponse =
+					await this.clientInstance.get<ListTransactionResponse>(
+						url,
+						{
+							params,
+						},
+					);
 			} else {
-				listResponse = await this.clientInstance.get<ListTransactionResponse>(url);
+				listResponse =
+					await this.clientInstance.get<ListTransactionResponse>(url);
 			}
 			const transactionData = listResponse.data;
 
@@ -206,18 +228,30 @@ class UpClient {
 		return this.makeTransactionsGetCall('/transactions', options);
 	};
 
-	public getTransactionsByAccount = async (accountId: string, options?: GetTransactionsQueryOptions): Promise<ResourceCollection<TransactionResource>> => {
-		return this.makeTransactionsGetCall(`/accounts/${accountId}/transactions`, options);
+	public getTransactionsByAccount = async (
+		accountId: string,
+		options?: GetTransactionsQueryOptions,
+	): Promise<ResourceCollection<TransactionResource>> => {
+		return this.makeTransactionsGetCall(
+			`/accounts/${accountId}/transactions`,
+			options,
+		);
 	};
 
-	public getCategories = async (): Promise<ResourceCollection<CategoryResource>> => {
+	public getCategories = async (): Promise<
+		ResourceCollection<CategoryResource>
+	> => {
 		try {
 			const res = await this.clientInstance.get('/categories');
 			const categoryData = res.data;
 
 			const builtCategories = buildCategories(categoryData.data);
 
-			return new ResourceCollection<CategoryResource>(builtCategories, {}, this.clientInstance);
+			return new ResourceCollection<CategoryResource>(
+				builtCategories,
+				{},
+				this.clientInstance,
+			);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
@@ -239,17 +273,27 @@ class UpClient {
 			const res = await this.clientInstance.get<GetTagsResponse>('/tags');
 			const tagData = res.data;
 
-			return new ResourceCollection<TagResource>(buildTags(tagData.data), tagData.links, this.clientInstance);
+			return new ResourceCollection<TagResource>(
+				buildTags(tagData.data),
+				tagData.links,
+				this.clientInstance,
+			);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
 	};
 
-	public addTagsToTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
+	public addTagsToTransaction = async (
+		transactionId: string,
+		payload: PostTagPayload[],
+	): Promise<boolean> => {
 		try {
-			const res = await this.clientInstance.post(`/transactions/${transactionId}/relationships/tags`, {
-				data: payload,
-			});
+			const res = await this.clientInstance.post(
+				`/transactions/${transactionId}/relationships/tags`,
+				{
+					data: payload,
+				},
+			);
 			// tslint:disable-next-line:no-console
 			console.log(res);
 
@@ -259,13 +303,19 @@ class UpClient {
 		}
 	};
 
-	public removeTagsFromTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
+	public removeTagsFromTransaction = async (
+		transactionId: string,
+		payload: PostTagPayload[],
+	): Promise<boolean> => {
 		try {
-			const res = await this.clientInstance.delete(`/transactions/${transactionId}/relationships/tags`, {
-				data: {
-					data: payload,
+			const res = await this.clientInstance.delete(
+				`/transactions/${transactionId}/relationships/tags`,
+				{
+					data: {
+						data: payload,
+					},
 				},
-			});
+			);
 
 			return res.status === 204;
 		} catch (e: any) {

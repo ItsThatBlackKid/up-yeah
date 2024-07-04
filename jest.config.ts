@@ -34,12 +34,12 @@ export default {
     coverageProvider: "v8",
 
     // A list of reporter names that Jest uses when writing coverage reports
-    // coverageReporters: [
-    //   "json",
-    //   "text",
+    coverageReporters: [
+      "json",
+      "text",
     //   "lcov",
     //   "clover"
-    // ],
+    ],
 
     reporters: [
         "default",

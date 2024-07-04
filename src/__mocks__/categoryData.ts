@@ -1,5 +1,6 @@
 import { GetCategoriesResponse } from '../client';
 
+
 export const mockGetCategoriesResponse: GetCategoriesResponse = {
 	data: [
 		{

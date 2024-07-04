@@ -133,4 +133,4 @@ export type TagRelationships = {
  * End Tag Types
  */
 
-export type ResourceType = 'accounts' | 'transactions' | 'tags' | 'categories';
+export type ResourceType = 'accounts' | 'transactions' | 'tags' | 'categories' | 'unknwon';

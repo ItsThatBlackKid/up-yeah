@@ -38,7 +38,7 @@ export type ResourceResponseData = {
 	type: string;
 };
 
-export type ResourceResponse = {
-	data: ResourceResponseData[];
+export type ResourceResponse <T> = {
+	data: Array<T>;
 	links: ResponseLinks;
 };

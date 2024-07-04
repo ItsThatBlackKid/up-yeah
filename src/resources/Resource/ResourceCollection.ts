@@ -1,31 +1,51 @@
-import {Axios, AxiosResponse} from 'axios';
-import {ErrorObject, GetAccountsResponse, ListTransactionResponse} from '../../client';
+import { Axios, AxiosResponse } from 'axios';
+import {
+	AccountResourceResponse,
+	ErrorObject,
+	GetAccountsResponse,
+	ListTransactionResponse,
+	TransactionResponse,
+} from '../../client';
 import UpError from '../../errors/UpError';
 import UpErrorCollection from '../../errors/UpErrorCollection';
-import {Maybe, ResourceResponse, ResponseLinks} from '../../types';
-import {buildAccounts, buildTransactions} from '../../utils';
+import { Maybe, ResourceResponse, ResponseLinks } from '../../types';
+import { buildAccounts, buildTransactions } from '../../utils';
 import AccountResource from '../Account/AccountResource';
 import TransactionResource from '../Transactions/TransactionResource';
 import Resource from './Resource';
+import { ResourceType } from '../types';
 
 interface IResourceLink<T extends Resource> {
 	prev: () => Promise<Maybe<T[]>>;
 	next: () => Promise<Maybe<T[]>>;
 }
-export default class ResourceCollection<T extends Resource> implements IResourceLink<T> {
+export default class ResourceCollection<T extends Resource>
+	implements IResourceLink<T>
+{
 	private client: Axios;
 	prevLink: Maybe<string>;
 	nextLink: Maybe<string>;
 	resources: T[];
+	resourceType: ResourceType;
 	constructor(resources: T[], links: ResponseLinks, client: Axios) {
+		this.client = client;
+
+		if(resources.length <= 0 ) {
+			this.resources = [];
+			this.resourceType = 'unknwon';
+			return;
+		}
+
+		this.resourceType = resources[0].type;
+
 		this.resources = resources.map(resource => {
 			resource.setClient(client);
 			return resource;
-		})
+		});
+
 		this.resources = resources;
 		this.prevLink = links.prev;
 		this.nextLink = links.next;
-		this.client = client;
 	}
 
 	/**
@@ -35,12 +55,16 @@ export default class ResourceCollection<T extends Resource> implements IResource
 		return this.handleLink(this.prevLink);
 	};
 
-	private nextAccount = (axiosResponse: AxiosResponse<GetAccountsResponse>): AccountResource[] => {
-		return buildAccounts(axiosResponse.data.data);
+	private nextAccount = (
+		accRes: AccountResourceResponse[],
+	): AccountResource[] => {
+		return buildAccounts(accRes);
 	};
 
-	private nextTransactions = (axiosResponse: AxiosResponse<ListTransactionResponse>): TransactionResource[] => {
-		return buildTransactions(axiosResponse.data.data);
+	private nextTransactions = (
+		transRes: TransactionResponse[],
+	): TransactionResource[] => {
+		return buildTransactions(transRes);
 	};
 
 	public next = async (): Promise<Maybe<T[]>> => {
@@ -54,39 +78,52 @@ export default class ResourceCollection<T extends Resource> implements IResource
 
 		let res;
 		try {
-			res = await this.client.get<ResourceResponse>(linkURL);
+			if (this.resourceType === 'accounts') {
+				res = await this.client.get<
+					ResourceResponse<AccountResourceResponse>
+				>(linkURL);
+			} else if (this.resourceType === 'transactions') {
+				res = await this.client.get<
+					ResourceResponse<TransactionResponse>
+				>(linkURL);
+			}
 		} catch (e: any) {
 			const errors: ErrorObject[] | undefined = e.response.data.errors;
 			const collectedErrors: UpError[] = [];
 
 			if (errors) {
 				errors.forEach(err => {
-					collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
+					collectedErrors.push(
+						new UpError(
+							err.status,
+							err.title,
+							err.detail,
+							err.source,
+						),
+					);
 				});
 			}
 
 			throw new UpErrorCollection(collectedErrors);
 		}
-		if (!res.data.data || res.data.data.length === 0) {
-			return null;
-		}
-
-		const { type } = res.data.data[0];
-
-		if (!['accounts', 'transactions'].includes(type)) {
+		if (!res || !res.data.data || res.data.data.length === 0) {
 			return null;
 		}
 
 		this.nextLink = res.data.links.next;
 		this.prevLink = res.data.links.prev;
 
-		if (type === 'accounts') {
-			this.resources = this.nextAccount(res as AxiosResponse<GetAccountsResponse>) as unknown as T[];
+		if (this.resourceType === 'accounts') {
+			this.resources = this.nextAccount(
+				res.data.data as AccountResourceResponse[],
+			) as unknown as T[];
 			return this.resources;
 		}
 
-		if (type === 'transactions') {
-			this.resources = this.nextTransactions(res as AxiosResponse<ListTransactionResponse>) as unknown as T[];
+		if (this.resourceType === 'transactions') {
+			this.resources = this.nextTransactions(
+				res.data.data as TransactionResponse[],
+			) as unknown as T[];
 			return this.resources;
 		}
 	};
