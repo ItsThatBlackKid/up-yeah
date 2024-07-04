@@ -7,8 +7,8 @@
     "test": "\"./node_modules/.bin/jest 2\" --coverage",
     "build": "tsc",
     "clean": "rm -rf ./lib",
-    "lint": "eslint -p tsconfig.json",
-    "lint:fix": "tslint --fix -p tsconfig.json",
+    "lint": "npx eslint",
+    "lint:fix": "npx eslint --fix",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\""
   },
   "keywords": [

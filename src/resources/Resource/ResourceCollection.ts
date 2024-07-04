@@ -1,10 +1,8 @@
-import { Axios, AxiosResponse } from 'axios';
+import { Axios } from 'axios';
 import {
 	AccountResourceResponse,
 	ErrorObject,
-	GetAccountsResponse,
-	ListTransactionResponse,
-	TransactionResponse,
+	TransactionResponse
 } from '../../client';
 import UpError from '../../errors/UpError';
 import UpErrorCollection from '../../errors/UpErrorCollection';
@@ -12,16 +10,14 @@ import { Maybe, ResourceResponse, ResponseLinks } from '../../types';
 import { buildAccounts, buildTransactions } from '../../utils';
 import AccountResource from '../Account/AccountResource';
 import TransactionResource from '../Transactions/TransactionResource';
-import Resource from './Resource';
 import { ResourceType } from '../types';
+import Resource from './Resource';
 
 interface IResourceLink<T extends Resource> {
 	prev: () => Promise<Maybe<T[]>>;
 	next: () => Promise<Maybe<T[]>>;
 }
-export default class ResourceCollection<T extends Resource>
-	implements IResourceLink<T>
-{
+export default class ResourceCollection<T extends Resource> implements IResourceLink<T> {
 	private client: Axios;
 	prevLink: Maybe<string>;
 	nextLink: Maybe<string>;
@@ -30,7 +26,7 @@ export default class ResourceCollection<T extends Resource>
 	constructor(resources: T[], links: ResponseLinks, client: Axios) {
 		this.client = client;
 
-		if(resources.length <= 0 ) {
+		if (resources.length <= 0) {
 			this.resources = [];
 			this.resourceType = 'unknwon';
 			return;
@@ -52,7 +48,11 @@ export default class ResourceCollection<T extends Resource>
 	 * Retrieves the previous resource.
 	 */
 	public prev = async (): Promise<Maybe<T[]>> => {
-		return this.handleLink(this.prevLink);
+		return await this.handleLink(this.prevLink);
+	};
+
+	public next = async (): Promise<Maybe<T[]>> => {
+		return await this.handleLink(this.nextLink);
 	};
 
 	private nextAccount = (
@@ -65,10 +65,6 @@ export default class ResourceCollection<T extends Resource>
 		transRes: TransactionResponse[],
 	): TransactionResource[] => {
 		return buildTransactions(transRes);
-	};
-
-	public next = async (): Promise<Maybe<T[]>> => {
-		return this.handleLink(this.nextLink);
 	};
 
 	private handleLink = async (linkURL: Maybe<string>) => {

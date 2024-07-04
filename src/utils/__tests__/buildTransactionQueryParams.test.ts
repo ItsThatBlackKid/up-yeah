@@ -4,7 +4,7 @@ import { GetTransactionsQueryOptions, TransactionStatus } from '../../client';
 import { buildTransactionQueryParams } from '../buildParams';
 
 describe('buildTransactionQueryParams', () => {
-	it('map options to params correctly', async () => {
+	it('map options to params correctly', () => {
 		mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
 
 		const options: GetTransactionsQueryOptions = {

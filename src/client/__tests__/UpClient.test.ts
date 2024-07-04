@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import mockAxios from 'jest-mock-axios';
 import {
 	mockGetAccountResponse,
@@ -8,14 +8,12 @@ import {
 import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
 import {
 	mockTagPayload,
-	mockTagRelationships,
-	mockTagsResponse,
+	mockTagsResponse
 } from '../../__mocks__/tagData';
 import {
 	mockListTransactionsResponse,
-	mockTransactionAttributes,
 	mockTransactionResponse,
-	mockUpGetTransactionsEmpty,
+	mockUpGetTransactionsEmpty
 } from '../../__mocks__/transactionData';
 import { IUpError } from '../../errors';
 import UpErrorCollection from '../../errors/UpErrorCollection';
@@ -30,18 +28,17 @@ import {
 	TransactionAttributes,
 	TransactionStatusEnum,
 } from '../../resources/types';
-import UpClient from '../UpClient';
-import {
-	GetAccountsQueryOptions,
-	GetTransactionResponse,
-	GetTransactionsQueryOptions,
-	PostTagPayload,
-	TransactionStatus,
-} from '../types';
 import {
 	buildAccountGetParams,
 	buildTransactionQueryParams,
 } from '../../utils/buildParams';
+import UpClient from '../UpClient';
+import {
+	GetAccountsQueryOptions,
+	GetTransactionsQueryOptions,
+	PostTagPayload,
+	TransactionStatus
+} from '../types';
 
 jest.mock('../../utils/buildParams/');
 
@@ -229,18 +226,6 @@ describe('Up Client', () => {
 			it('should return transactions in response', async () => {
 				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
 
-				const expectedAttr: TransactionAttributes = {
-					amount: {
-						currencyCode: 'AUD',
-						value: '4.20',
-						valueInBaseUnits: 420,
-					},
-					createdAt: new Date('2023-07-18T07:44:17+10:00'),
-					description: 'This is a transaction',
-					isCategorizable: false,
-					status: TransactionStatusEnum.SETTLED,
-				};
-
 				const transactions = await client.getTransactions();
 
 				expect(transactions).toBeInstanceOf(
@@ -354,38 +339,6 @@ describe('Up Client', () => {
 					data: mockGetCategoriesResponse,
 				});
 
-				const expectedCategories: CategoryResource[] = [
-					new CategoryResource(
-						'hobbies',
-						{ name: 'Hobbies' },
-						{
-							parent: {
-								data: {
-									id: 'good-life',
-									type: 'categories',
-								},
-
-								links: {
-									related: 'https://somegood.life/api/v1/etc',
-								},
-							},
-							children: {
-								data: [],
-							},
-						},
-					),
-					new CategoryResource(
-						'good-life',
-						{ name: 'Good Life' },
-						{
-							parent: {},
-							children: {
-								data: [],
-							},
-						},
-					),
-				];
-
 				const categories = await client.getCategories();
 
 				expect(categories.resources).toBeInstanceOf(
@@ -438,24 +391,6 @@ describe('Up Client', () => {
 				});
 
 				const category = await client.getCategory('good-life');
-				const expectedCategory: CategoryResource = new CategoryResource(
-					'hobbies',
-					{ name: 'Hobbies' },
-					{
-						parent: {
-							data: {
-								id: 'good-life',
-								type: 'categories',
-							},
-							links: {
-								related: 'https://somegood.life/api/v1/etc',
-							},
-						},
-						children: {
-							data: [],
-						},
-					},
-				);
 
 				expect(category).toBeInstanceOf(CategoryResource);
 			});
@@ -504,13 +439,6 @@ describe('Up Client', () => {
 
 			it('should return a collection of tags', async () => {
 				mockAxios.get.mockResolvedValue({ data: mockTagsResponse });
-
-				const expectedTags: TagResource[] = [
-					new TagResource('Pizza Night', mockTagRelationships),
-					new TagResource('Holiday', {
-						transactions: null,
-					}),
-				];
 
 				const tags = await client.getTags();
 

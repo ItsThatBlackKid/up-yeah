@@ -11,7 +11,6 @@ import CategoryResource from '../resources/Categories/CategoryResource';
 import ResourceCollection from '../resources/Resource/ResourceCollection';
 import TagResource from '../resources/Tags/TagResource';
 import TransactionResource from '../resources/Transactions/TransactionResource';
-import { AccountTypeEnum, OwnershipTypeEnum } from '../resources/types';
 import {
 	buildAccount,
 	buildAccounts,
@@ -20,6 +19,10 @@ import {
 	buildTransactions,
 } from '../utils';
 import {
+	buildAccountGetParams,
+	buildTransactionQueryParams,
+} from '../utils/buildParams';
+import {
 	buildCategories,
 	buildCategory,
 } from '../utils/buildResources/buildCategories';
@@ -27,20 +30,14 @@ import {
 	ErrorObject,
 	GetAccountResponse,
 	GetAccountsQueryOptions,
-	GetAccountsQueryParams,
 	GetAccountsResponse,
 	GetTagsResponse,
 	GetTransactionResponse,
 	GetTransactionsQueryOptions,
-	GetTransactionsQueryParams,
 	ListTransactionResponse,
 	PostTagPayload,
-	UpClientOptions,
+	UpClientOptions
 } from './types';
-import {
-	buildAccountGetParams,
-	buildTransactionQueryParams,
-} from '../utils/buildParams';
 
 class UpClient {
 	private readonly clientInstance: Axios;
@@ -187,14 +184,14 @@ class UpClient {
 	public getTransactions = async (
 		options?: GetTransactionsQueryOptions,
 	): Promise<ResourceCollection<TransactionResource>> => {
-		return this.makeTransactionsGetCall('/transactions', options);
+		return await this.makeTransactionsGetCall('/transactions', options);
 	};
 
 	public getTransactionsByAccount = async (
 		accountId: string,
 		options?: GetTransactionsQueryOptions,
 	): Promise<ResourceCollection<TransactionResource>> => {
-		return this.makeTransactionsGetCall(
+		return await this.makeTransactionsGetCall(
 			`/accounts/${accountId}/transactions`,
 			options,
 		);

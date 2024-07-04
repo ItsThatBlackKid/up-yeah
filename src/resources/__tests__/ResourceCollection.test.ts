@@ -1,13 +1,13 @@
 import { Axios, AxiosInstance } from 'axios';
-import { ResponseLinks } from '../../types';
-import { mockAccountResponse, mockUpAccountsResponse } from '../../__mocks__/accountData';
+import { mockUpAccountsResponse } from '../../__mocks__/accountData';
 import mockAxios from '../../__mocks__/axios';
+import { mockAccountResource, mockAccountResource2 } from '../../__mocks__/mockResources/accounts';
 import { mockListTransactionsMultiResponse, mockTransactionAttributes } from '../../__mocks__/transactionData';
+import { ResponseLinks } from '../../types';
 import AccountResource from '../Account/AccountResource';
 import ResourceCollection from '../Resource/ResourceCollection';
 import TransactionResource from '../Transactions/TransactionResource';
 import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../types';
-import { mockAccountResource, mockAccountResource2 } from '../../__mocks__/mockResources/accounts';
 
 describe('ResourceLink', () => {
 	it('should set prevLink and nextLink when constructed', () => {
