@@ -6,6 +6,13 @@ import mockAxios from '../../__mocks__/axios';
 import { Axios } from 'axios';
 
 describe('buildAccounts', () => {
+	beforeEach(() => {
+		jest.spyOn(AccountResource.prototype, 'setClient');
+	})
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
 	it('should build AccountResource correctly', () => {
 		AccountResource.prototype.setClient = jest.fn();
 		const account = buildAccount(mockAccountResponse);
@@ -33,6 +40,12 @@ describe('buildAccounts', () => {
 		expect(account).toMatchObject(expectedAccountResource);
 		expect(account).toBeInstanceOf(AccountResource);
 	});
+
+		it('should build resource with client if provided', () => {
+		const account = buildAccount(mockAccountResponse, mockAxios as unknown as Axios);
+
+		expect(account.setClient).toHaveBeenCalledWith(mockAxios);
+	})
 
 	it('should build accounts', () => {
 		const accounts = buildAccounts(mockUpAccountsResponse.data);

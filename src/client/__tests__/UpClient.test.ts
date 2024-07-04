@@ -1,9 +1,22 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosResponse } from 'axios';
 import mockAxios from 'jest-mock-axios';
-import { mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty } from '../../__mocks__/accountData';
+import {
+	mockGetAccountResponse,
+	mockUpAccountsResponse,
+	mockUpListAccountsEmpty,
+} from '../../__mocks__/accountData';
 import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
-import { mockTagPayload, mockTagRelationships, mockTagsResponse } from '../../__mocks__/tagData';
-import { mockListTransactionsResponse, mockUpGetTransactionsEmpty } from '../../__mocks__/transactionData';
+import {
+	mockTagPayload,
+	mockTagRelationships,
+	mockTagsResponse,
+} from '../../__mocks__/tagData';
+import {
+	mockListTransactionsResponse,
+	mockTransactionAttributes,
+	mockTransactionResponse,
+	mockUpGetTransactionsEmpty,
+} from '../../__mocks__/transactionData';
 import { IUpError } from '../../errors';
 import UpErrorCollection from '../../errors/UpErrorCollection';
 import AccountResource from '../../resources/Account/AccountResource';
@@ -18,9 +31,17 @@ import {
 	TransactionStatusEnum,
 } from '../../resources/types';
 import UpClient from '../UpClient';
-import { GetAccountsQueryOptions, GetTransactionsQueryOptions, PostTagPayload, TransactionStatus } from '../types';
-import { buildAccountGetParams, buildTransactionQueryParams } from '../../utils/buildParams';
-
+import {
+	GetAccountsQueryOptions,
+	GetTransactionResponse,
+	GetTransactionsQueryOptions,
+	PostTagPayload,
+	TransactionStatus,
+} from '../types';
+import {
+	buildAccountGetParams,
+	buildTransactionQueryParams,
+} from '../../utils/buildParams';
 
 jest.mock('../../utils/buildParams/');
 
@@ -55,16 +76,22 @@ describe('Up Client', () => {
 			});
 
 			it('should return accounts found in response data', async () => {
-				mockAxios.get.mockResolvedValue({ data: mockUpAccountsResponse });
+				mockAxios.get.mockResolvedValue({
+					data: mockUpAccountsResponse,
+				});
 
 				const accounts = await client.getAccounts();
 
-				expect(accounts).toBeInstanceOf(ResourceCollection<TransactionResource>);
+				expect(accounts).toBeInstanceOf(
+					ResourceCollection<TransactionResource>,
+				);
 			});
 
 			it('should pass query params to get call', async () => {
 				mockAxios.get.mockResolvedValue(mockUpListAccountsEmpty);
-				(buildAccountGetParams as jest.Mock).mockReturnValue({mockParam: 'yo'})
+				(buildAccountGetParams as jest.Mock).mockReturnValue({
+					mockParam: 'yo',
+				});
 
 				const options: GetAccountsQueryOptions = {
 					pageSize: 10,
@@ -76,7 +103,7 @@ describe('Up Client', () => {
 				expect(buildAccountGetParams).toHaveBeenCalled();
 				expect(mockAxios.get).toHaveBeenCalledWith('/accounts', {
 					params: {
-						mockParam: 'yo'
+						mockParam: 'yo',
 					},
 				});
 			});
@@ -117,7 +144,8 @@ describe('Up Client', () => {
 			it('should return account with matching ID', async () => {
 				mockAxios.get.mockResolvedValue(mockGetAccountResponse);
 
-				const account: AccountResource | undefined = await client.getAccount('mockId');
+				const account: AccountResource | undefined =
+					await client.getAccount('mockId');
 				const expectedAccountResource = new AccountResource(
 					'mockId',
 					{
@@ -138,7 +166,7 @@ describe('Up Client', () => {
 					},
 				);
 
-				// expectedAccountResource.setClient(mockAxios as unknown as AxiosInstance)
+				expectedAccountResource.setClient(mockAxios as unknown as AxiosInstance)
 
 				expect(account).toEqual(expectedAccountResource);
 			});
@@ -169,6 +197,26 @@ describe('Up Client', () => {
 	});
 
 	describe('Transactions', () => {
+		describe('getTransaction', () => {
+			it('should make GET call to /transactions/{id} when invoked', async () => {
+				mockAxios.get.mockResolvedValue({data: {data: mockTransactionResponse}});
+
+				await client.getTransaction('mock-id');
+
+				expect(mockAxios.get).toHaveBeenCalledWith('/transactions/mock-id');
+			});
+
+			it('should return transaction', async () => {
+				mockAxios.get.mockResolvedValue({data: {data: mockTransactionResponse}});
+
+				const transaction = await client.getTransaction('mock-id');
+
+				expect(transaction).toBeInstanceOf(
+					TransactionResource
+				);
+			})
+		});
+
 		describe('getTransactions', () => {
 			it('should make GET call to /transactions when invoked', async () => {
 				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
@@ -195,7 +243,9 @@ describe('Up Client', () => {
 
 				const transactions = await client.getTransactions();
 
-				expect(transactions).toBeInstanceOf(ResourceCollection<TransactionResource>);
+				expect(transactions).toBeInstanceOf(
+					ResourceCollection<TransactionResource>,
+				);
 			});
 
 			it('should pass query params to get call', async () => {
@@ -210,9 +260,10 @@ describe('Up Client', () => {
 					filterTag: 'Holiday',
 				};
 
-
 				await client.getTransactions(options);
-				expect(buildTransactionQueryParams).toHaveBeenCalledWith(options);
+				expect(buildTransactionQueryParams).toHaveBeenCalledWith(
+					options,
+				);
 			});
 
 			it('should throw UpErrorCollection if API errors', async () => {
@@ -253,21 +304,34 @@ describe('Up Client', () => {
 					isCategorizable: false,
 					status: TransactionStatusEnum.SETTLED,
 				};
-				const expectedTransaction: TransactionResource = new TransactionResource('mockId', expectedAttr, {
-					account: {},
-				});
-				expectedTransaction.setClient(mockAxios as unknown as AxiosInstance);
+				const expectedTransaction: TransactionResource =
+					new TransactionResource('mockId', expectedAttr, {
+						account: {},
+					});
+				expectedTransaction.setClient(
+					mockAxios as unknown as AxiosInstance,
+				);
 
-				const transactions = await client.getTransactionsByAccount('xyz');
-				expect(transactions).toBeInstanceOf(ResourceCollection<AccountResource>);
-				expect(transactions.resources).toBeInstanceOf(Array<AccountResource>);
+				const transactions = await client.getTransactionsByAccount(
+					'xyz',
+				);
+				expect(transactions).toBeInstanceOf(
+					ResourceCollection<AccountResource>,
+				);
+				expect(transactions.resources).toBeInstanceOf(
+					Array<AccountResource>,
+				);
 			});
 
 			it('should return transactions in response', async () => {
 				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
-				const transactions = await client.getTransactionsByAccount('/accounts/mockId/transactions');
+				const transactions = await client.getTransactionsByAccount(
+					'/accounts/mockId/transactions',
+				);
 
-				expect(transactions).toBeInstanceOf(ResourceCollection<TransactionResource>);
+				expect(transactions).toBeInstanceOf(
+					ResourceCollection<TransactionResource>,
+				);
 			});
 		});
 	});
@@ -324,7 +388,9 @@ describe('Up Client', () => {
 
 				const categories = await client.getCategories();
 
-				expect(categories.resources).toBeInstanceOf(Array<CategoryResource>);
+				expect(categories.resources).toBeInstanceOf(
+					Array<CategoryResource>,
+				);
 			});
 			it('should throw UpError if api returns an error', async () => {
 				const mockUpError: IUpError = {
@@ -359,7 +425,9 @@ describe('Up Client', () => {
 
 				await client.getCategory('good-life');
 
-				expect(mockAxios.get).toHaveBeenCalledWith('/categories/good-life');
+				expect(mockAxios.get).toHaveBeenCalledWith(
+					'/categories/good-life',
+				);
 			});
 
 			it('should return CategoryResource on success', async () => {
@@ -486,15 +554,18 @@ describe('Up Client', () => {
 					},
 				]);
 
-				expect(mockAxios.post).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', {
-					data: [
-						mockTagPayload,
-						{
-							type: 'tags',
-							id: 'fishing',
-						},
-					],
-				});
+				expect(mockAxios.post).toHaveBeenCalledWith(
+					'/transactions/xyz/relationships/tags',
+					{
+						data: [
+							mockTagPayload,
+							{
+								type: 'tags',
+								id: 'fishing',
+							},
+						],
+					},
+				);
 			});
 
 			it('should return true on success', async () => {

@@ -1,7 +1,7 @@
 {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "[typescript]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "prettier.configPath": "./.prettierrc",
     "editor.formatOnSave": true,

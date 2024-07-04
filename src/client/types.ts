@@ -76,6 +76,11 @@ export type TransactionResponse = {
 	links: ResourceLink;
 };
 
+export type GetTransactionResponse = {
+	data: TransactionResponse;
+
+}
+
 export type ListTransactionResponse = {
 	data: TransactionResponse[];
 	links: ResponseLinks;
