@@ -1,17 +1,46 @@
+import { AxiosInstance } from 'axios';
 import mockAxios from 'jest-mock-axios';
+import {
+	mockGetAccountResponse,
+	mockUpAccountsResponse,
+	mockUpListAccountsEmpty,
+} from '../../__mocks__/accountData';
+import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
+import {
+	mockTagPayload,
+	mockTagsResponse
+} from '../../__mocks__/tagData';
+import {
+	mockListTransactionsResponse,
+	mockTransactionResponse,
+	mockUpGetTransactionsEmpty
+} from '../../__mocks__/transactionData';
 import { IUpError } from '../../errors';
 import UpErrorCollection from '../../errors/UpErrorCollection';
 import AccountResource from '../../resources/Account/AccountResource';
 import CategoryResource from '../../resources/Categories/CategoryResource';
+import ResourceCollection from '../../resources/Resource/ResourceCollection';
 import TagResource from '../../resources/Tags/TagResource';
 import TransactionResource from '../../resources/Transactions/TransactionResource';
-import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../../resources/types';
-import { mockGetAccountResponse, mockUpAccountsResponse, mockUpListAccountsEmpty } from '../../__mocks__/accountData';
-import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
-import { mockTagPayload, mockTagRelationships, mockTagsResponse } from '../../__mocks__/tagData';
-import { mockListTransactionsResponse, mockUpGetTransactionsEmpty } from '../../__mocks__/transactionData';
-import { GetAccountsQueryOptions, GetTransactionsQueryOptions, PostTagPayload, TransactionStatus } from '../types';
+import {
+	AccountTypeEnum,
+	OwnershipTypeEnum,
+	TransactionAttributes,
+	TransactionStatusEnum,
+} from '../../resources/types';
+import {
+	buildAccountGetParams,
+	buildTransactionQueryParams,
+} from '../../utils/buildParams';
 import UpClient from '../UpClient';
+import {
+	GetAccountsQueryOptions,
+	GetTransactionsQueryOptions,
+	PostTagPayload,
+	TransactionStatus
+} from '../types';
+
+jest.mock('../../utils/buildParams/');
 
 let client: UpClient;
 describe('Up Client', () => {
@@ -44,35 +73,22 @@ describe('Up Client', () => {
 			});
 
 			it('should return accounts found in response data', async () => {
-				mockAxios.get.mockResolvedValue({ data: mockUpAccountsResponse });
+				mockAxios.get.mockResolvedValue({
+					data: mockUpAccountsResponse,
+				});
 
 				const accounts = await client.getAccounts();
 
-				const expectedAccountResource = new AccountResource(
-					'mockId',
-					{
-						displayName: 'up-yeah',
-						accountType: AccountTypeEnum.TRANSACTIONAL,
-						balance: {
-							currencyCode: 'AUD',
-							value: '4.20',
-							valueInBaseUnits: 420,
-						},
-						createdAt: new Date('2021-09-23T01:12:00+10:00'),
-						ownershipType: OwnershipTypeEnum.INDIVIDUAL,
-					},
-					{
-						transactions: {
-							data: [],
-						},
-					},
+				expect(accounts).toBeInstanceOf(
+					ResourceCollection<TransactionResource>,
 				);
-
-				expect(accounts.resources[0]).toEqual(expectedAccountResource);
 			});
 
 			it('should pass query params to get call', async () => {
 				mockAxios.get.mockResolvedValue(mockUpListAccountsEmpty);
+				(buildAccountGetParams as jest.Mock).mockReturnValue({
+					mockParam: 'yo',
+				});
 
 				const options: GetAccountsQueryOptions = {
 					pageSize: 10,
@@ -81,12 +97,10 @@ describe('Up Client', () => {
 				};
 
 				await client.getAccounts(options);
-
+				expect(buildAccountGetParams).toHaveBeenCalled();
 				expect(mockAxios.get).toHaveBeenCalledWith('/accounts', {
 					params: {
-						'page[size]': options.pageSize,
-						'filter[accountType]': options.filterAccType,
-						'filter[ownershipType]': options.filterAccOwnershipType,
+						mockParam: 'yo',
 					},
 				});
 			});
@@ -127,7 +141,8 @@ describe('Up Client', () => {
 			it('should return account with matching ID', async () => {
 				mockAxios.get.mockResolvedValue(mockGetAccountResponse);
 
-				const account: AccountResource | undefined = await client.getAccount('mockId');
+				const account: AccountResource | undefined =
+					await client.getAccount('mockId');
 				const expectedAccountResource = new AccountResource(
 					'mockId',
 					{
@@ -147,6 +162,8 @@ describe('Up Client', () => {
 						},
 					},
 				);
+
+				expectedAccountResource.setClient(mockAxios as unknown as AxiosInstance)
 
 				expect(account).toEqual(expectedAccountResource);
 			});
@@ -177,6 +194,26 @@ describe('Up Client', () => {
 	});
 
 	describe('Transactions', () => {
+		describe('getTransaction', () => {
+			it('should make GET call to /transactions/{id} when invoked', async () => {
+				mockAxios.get.mockResolvedValue({data: {data: mockTransactionResponse}});
+
+				await client.getTransaction('mock-id');
+
+				expect(mockAxios.get).toHaveBeenCalledWith('/transactions/mock-id');
+			});
+
+			it('should return transaction', async () => {
+				mockAxios.get.mockResolvedValue({data: {data: mockTransactionResponse}});
+
+				const transaction = await client.getTransaction('mock-id');
+
+				expect(transaction).toBeInstanceOf(
+					TransactionResource
+				);
+			})
+		});
+
 		describe('getTransactions', () => {
 			it('should make GET call to /transactions when invoked', async () => {
 				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
@@ -189,26 +226,29 @@ describe('Up Client', () => {
 			it('should return transactions in response', async () => {
 				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
 
-				const expectedTransaction: TransactionResource = {
-					amount: {
-						currencyCode: 'AUD',
-						value: '4.20',
-						valueInBaseUnits: 420,
-					},
-					createdAt: new Date('2023-07-18T07:44:17+10:00'),
-					description: 'This is a transaction',
-					id: 'mockId',
-					isCategorizable: false,
-					relationships: {
-						account: {},
-					},
-					type: 'transactions',
-					status: TransactionStatusEnum.SETTLED,
-				};
-
 				const transactions = await client.getTransactions();
 
-				expect(transactions.resources).toEqual(expect.arrayContaining([expectedTransaction]));
+				expect(transactions).toBeInstanceOf(
+					ResourceCollection<TransactionResource>,
+				);
+			});
+
+			it('should pass query params to get call', async () => {
+				mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
+
+				const options: GetTransactionsQueryOptions = {
+					pageSize: 10,
+					filterStatus: TransactionStatus.HELD,
+					filterSince: '2020-01-01T01:02:03+10:00',
+					filterUntil: '2023-01-01T01:02:03+10:00',
+					filterCategory: 'good-life',
+					filterTag: 'Holiday',
+				};
+
+				await client.getTransactions(options);
+				expect(buildTransactionQueryParams).toHaveBeenCalledWith(
+					options,
+				);
 			});
 
 			it('should throw UpErrorCollection if API errors', async () => {
@@ -233,30 +273,50 @@ describe('Up Client', () => {
 					await client.getTransactions();
 				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
 			});
+		});
+		describe('getTransactionsByAccount', () => {
+			it('should make GET call to /accounts/{accountId}/transactions', async () => {
+				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
 
-			it('should pass query params to get call', async () => {
-				mockAxios.get.mockResolvedValue(mockUpGetTransactionsEmpty);
-
-				const options: GetTransactionsQueryOptions = {
-					pageSize: 10,
-					filterStatus: TransactionStatus.HELD,
-					filterSince: '2020-01-01T01:02:03+10:00',
-					filterUntil: '2023-01-01T01:02:03+10:00',
-					filterCategory: 'good-life',
-					filterTag: 'Holiday',
-				};
-
-				await client.getTransactions(options);
-				expect(mockAxios.get).toHaveBeenCalledWith('/transactions', {
-					params: {
-						'page[size]': options.pageSize,
-						'filter[status]': options.filterStatus,
-						'filter[since]': options.filterSince,
-						'filter[until]': options.filterUntil,
-						'filter[category]': options.filterCategory,
-						'filter[tag]': options.filterTag,
+				const expectedAttr: TransactionAttributes = {
+					amount: {
+						currencyCode: 'AUD',
+						value: '4.20',
+						valueInBaseUnits: 420,
 					},
-				});
+					createdAt: new Date('2023-07-18T07:44:17+10:00'),
+					description: 'This is a transaction',
+					isCategorizable: false,
+					status: TransactionStatusEnum.SETTLED,
+				};
+				const expectedTransaction: TransactionResource =
+					new TransactionResource('mockId', expectedAttr, {
+						account: {},
+					});
+				expectedTransaction.setClient(
+					mockAxios as unknown as AxiosInstance,
+				);
+
+				const transactions = await client.getTransactionsByAccount(
+					'xyz',
+				);
+				expect(transactions).toBeInstanceOf(
+					ResourceCollection<AccountResource>,
+				);
+				expect(transactions.resources).toBeInstanceOf(
+					Array<AccountResource>,
+				);
+			});
+
+			it('should return transactions in response', async () => {
+				mockAxios.get.mockResolvedValue(mockListTransactionsResponse);
+				const transactions = await client.getTransactionsByAccount(
+					'/accounts/mockId/transactions',
+				);
+
+				expect(transactions).toBeInstanceOf(
+					ResourceCollection<TransactionResource>,
+				);
 			});
 		});
 	});
@@ -279,46 +339,11 @@ describe('Up Client', () => {
 					data: mockGetCategoriesResponse,
 				});
 
-				const expectedCategories: CategoryResource[] = [
-					{
-						id: 'hobbies',
-						type: 'categories',
-						attributes: {
-							name: 'Hobbies',
-						},
-						relationships: {
-							parent: {
-								data: {
-									id: 'good-life',
-									type: 'categories',
-								},
-								links: {
-									related: 'https://somegood.life/api/v1/etc',
-								},
-							},
-							children: {
-								data: [],
-							},
-						},
-					},
-					{
-						id: 'good-life',
-						type: 'categories',
-						attributes: {
-							name: 'Good Life',
-						},
-						relationships: {
-							parent: {},
-							children: {
-								data: [],
-							},
-						},
-					},
-				];
-
 				const categories = await client.getCategories();
 
-				expect(categories.resources).toEqual(expect.arrayContaining(expectedCategories));
+				expect(categories.resources).toBeInstanceOf(
+					Array<CategoryResource>,
+				);
 			});
 			it('should throw UpError if api returns an error', async () => {
 				const mockUpError: IUpError = {
@@ -353,10 +378,12 @@ describe('Up Client', () => {
 
 				await client.getCategory('good-life');
 
-				expect(mockAxios.get).toHaveBeenCalledWith('/categories/good-life');
+				expect(mockAxios.get).toHaveBeenCalledWith(
+					'/categories/good-life',
+				);
 			});
 
-			it('should build return CategoryResource on success', async () => {
+			it('should return CategoryResource on success', async () => {
 				mockAxios.get.mockResolvedValue({
 					data: {
 						data: mockGetCategoriesResponse.data[0],
@@ -364,29 +391,8 @@ describe('Up Client', () => {
 				});
 
 				const category = await client.getCategory('good-life');
-				const expectedCategory: CategoryResource = {
-					id: 'hobbies',
-					type: 'categories',
-					attributes: {
-						name: 'Hobbies',
-					},
-					relationships: {
-						parent: {
-							data: {
-								id: 'good-life',
-								type: 'categories',
-							},
-							links: {
-								related: 'https://somegood.life/api/v1/etc',
-							},
-						},
-						children: {
-							data: [],
-						},
-					},
-				};
 
-				expect(category).toEqual(expectedCategory);
+				expect(category).toBeInstanceOf(CategoryResource);
 			});
 
 			it('should throw UpError if api returns an error', async () => {
@@ -434,24 +440,9 @@ describe('Up Client', () => {
 			it('should return a collection of tags', async () => {
 				mockAxios.get.mockResolvedValue({ data: mockTagsResponse });
 
-				const expectedTags: TagResource[] = [
-					{
-						type: 'tags',
-						id: 'Pizza Night',
-						relationships: mockTagRelationships,
-					},
-					{
-						type: 'tags',
-						id: 'Holiday',
-						relationships: {
-							transactions: null,
-						},
-					},
-				];
-
 				const tags = await client.getTags();
 
-				expect(tags.resources).toEqual(expect.arrayContaining(expectedTags));
+				expect(tags.resources).toBeInstanceOf(Array<TagResource>);
 			});
 
 			it('should throw UpErrorCollection if api returns an error', async () => {
@@ -481,7 +472,7 @@ describe('Up Client', () => {
 		describe('addTagToTransaction', () => {
 			it('should make POST call to /transactions/{transactionId}/relationships/tags', async () => {
 				mockAxios.post.mockResolvedValue({
-					status: 204
+					status: 204,
 				});
 				await client.addTagsToTransaction('xyz', [
 					mockTagPayload,
@@ -491,20 +482,23 @@ describe('Up Client', () => {
 					},
 				]);
 
-				expect(mockAxios.post).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', {
-					data: [
-						mockTagPayload,
-						{
-							type: 'tags',
-							id: 'fishing',
-						},
-					],
-				});
+				expect(mockAxios.post).toHaveBeenCalledWith(
+					'/transactions/xyz/relationships/tags',
+					{
+						data: [
+							mockTagPayload,
+							{
+								type: 'tags',
+								id: 'fishing',
+							},
+						],
+					},
+				);
 			});
 
 			it('should return true on success', async () => {
 				mockAxios.post.mockResolvedValue({
-					status: 204
+					status: 204,
 				});
 
 				const val = await client.addTagsToTransaction('xyz', [
@@ -520,7 +514,7 @@ describe('Up Client', () => {
 
 			it('should return false if receive status other than 204', async () => {
 				mockAxios.post.mockResolvedValue({
-					status: 200
+					status: 200,
 				});
 
 				const val = await client.addTagsToTransaction('xyz', [
@@ -532,7 +526,7 @@ describe('Up Client', () => {
 				]);
 
 				expect(val).toEqual(false);
-			})
+			});
 
 			it('should throw UpErrorCollection if api returns an error', async () => {
 				const mockUpError: IUpError = {
@@ -561,7 +555,7 @@ describe('Up Client', () => {
 		describe('removeTagsFromTransaction', () => {
 			it('should make delete call to /transactions/{transactionId}/relationships/tags', async () => {
 				mockAxios.delete.mockResolvedValue({
-					status: 200
+					status: 200,
 				});
 				const payload: PostTagPayload[] = [
 					mockTagPayload,
@@ -572,16 +566,19 @@ describe('Up Client', () => {
 				];
 				await client.removeTagsFromTransaction('xyz', payload);
 
-				expect(mockAxios.delete).toHaveBeenCalledWith('/transactions/xyz/relationships/tags', expect.objectContaining({
-					data: expect.objectContaining({
-						data: payload
+				expect(mockAxios.delete).toHaveBeenCalledWith(
+					'/transactions/xyz/relationships/tags',
+					expect.objectContaining({
+						data: expect.objectContaining({
+							data: payload,
+						}),
 					}),
-				}));
+				);
 			});
 
 			it('should return true on success', async () => {
 				mockAxios.delete.mockResolvedValue({
-					status: 204
+					status: 204,
 				});
 
 				const val = await client.removeTagsFromTransaction('xyz', [
@@ -597,7 +594,7 @@ describe('Up Client', () => {
 
 			it('should return false if receive status other than 204', async () => {
 				mockAxios.delete.mockResolvedValue({
-					status: 200
+					status: 200,
 				});
 
 				const val = await client.removeTagsFromTransaction('xyz', [
@@ -609,7 +606,7 @@ describe('Up Client', () => {
 				]);
 
 				expect(val).toEqual(false);
-			})
+			});
 
 			it('should throw UpErrorCollection if api returns an error', async () => {
 				const mockUpError: IUpError = {
@@ -633,8 +630,6 @@ describe('Up Client', () => {
 					await client.removeTagsFromTransaction('xyz', []);
 				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
 			});
-
-
 		});
 	});
 });

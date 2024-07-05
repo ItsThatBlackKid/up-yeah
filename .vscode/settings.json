@@ -1,0 +1,12 @@
+{
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.configPath": "./.prettierrc",
+    "editor.formatOnSave": true,
+    "jest.jestCommandLine": "yarn test",
+    "eslint.format.enable": true,
+    "typescript.experimental.updateImportsOnPaste": true,
+    "typescript.format.semicolons": "insert"
+}

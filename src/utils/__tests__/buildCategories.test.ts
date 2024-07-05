@@ -2,73 +2,59 @@ import { buildCategories, buildCategory } from '../buildResources/buildCategorie
 import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
 import CategoryResource from '../../resources/Categories/CategoryResource';
 
-describe('buildCategories.ts', () => {
-	it('should build category resource', () => {
-		const category = buildCategory(mockGetCategoriesResponse.data[0]);
-		const expectedCategory: CategoryResource = {
-			id: 'hobbies',
-			type: 'categories',
-			attributes: {
-				name: 'Hobbies',
-			},
-			relationships: {
-				parent: {
-					data: {
-						id: 'good-life',
-						type: 'categories',
-					},
-					links: {
+const mockCategory = new CategoryResource(
+	'hobbies',
+	{
+	
+		name: 'Hobbies'
+	
+	},
+	
+	{
+	
+		parent: {
+			data: {
+				type: 'categories',
+				id: 'good-life',
+				
+				},
+				links: {
 						related: 'https://somegood.life/api/v1/etc',
 					},
 				},
 				children: {
 					data: [],
 				},
-			},
-		};
+			}
+	);
+const mockCategory2 = new CategoryResource(
+				'good-life',
+				{
+					name: 'Good Life'
+				},
+				{
+					parent: {},
+					children: {
+						data: [],
+					},
+				}
+			);
+describe('buildCategories.ts', () => {
+	it('should build category resource', () => {
+		const category = buildCategory(mockGetCategoriesResponse.data[0]);
 
-		expect(category).toEqual(expectedCategory);
+		expect(category).toMatchObject(mockCategory);
+		expect(category).toBeInstanceOf(CategoryResource);
 	});
 
 	it('should build all categories', () => {
 		const categories = buildCategories(mockGetCategoriesResponse.data);
 		const expectedCategories: CategoryResource[] = [
-			{
-				id: 'hobbies',
-				type: 'categories',
-				attributes: {
-					name: 'Hobbies',
-				},
-				relationships: {
-					parent: {
-						data: {
-							id: 'good-life',
-							type: 'categories',
-						},
-						links: {
-							related: 'https://somegood.life/api/v1/etc',
-						},
-					},
-					children: {
-						data: [],
-					},
-				},
-			},
-			{
-				id: 'good-life',
-				type: 'categories',
-				attributes: {
-					name: 'Good Life',
-				},
-				relationships: {
-					parent: {},
-					children: {
-						data: [],
-					},
-				},
-			},
+			mockCategory,
+			mockCategory2
 		];
 
 		expect(categories).toEqual(expectedCategories);
 	});
+
 });

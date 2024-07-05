@@ -8,9 +8,10 @@ const getAccounts = async () => {
     const accountCollection = await client.getAccounts();
     const acc1 = accountCollection.resources[0];
     // tslint:disable-next-line:no-console
-    console.log(accountCollection);
+    console.log(acc1);
+    console.log(await acc1.getTransactions())
     // tslint:disable-next-line:no-console
-    console.log(acc1.relationships)
+    // console.log(acc1.relationships)
 };
 
 
@@ -69,9 +70,19 @@ const getAccountsPagination = async () => {
     })
 }
 
+const getTransactionsByAccount = async () => {
+    const accounts = await client.getAccounts();
+    const acc0 = accounts.resources[0];
+
+    const transactions = await acc0.getTransactions();
+
+    transactions!.resources.forEach(transaction => console.log(JSON.stringify(transaction, null, 2)))
+}
+
 (async () => {
-    await getTransactionsWithOptions();
+    // getTransactionsByAccount()
+    // await getTransactionsWithOptions();
     // await getAccountsPagination()
-    // await getAccounts();
+    await getAccounts();
     // await getAccountsWithOptions();
 })();

@@ -3,7 +3,7 @@
  * Axios client to handle HTTP requests to the Up API
  */
 
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { Axios, AxiosResponse } from 'axios';
 import UpError from '../errors/UpError';
 import UpErrorCollection from '../errors/UpErrorCollection';
 import AccountResource from '../resources/Account/AccountResource';
@@ -11,38 +11,36 @@ import CategoryResource from '../resources/Categories/CategoryResource';
 import ResourceCollection from '../resources/Resource/ResourceCollection';
 import TagResource from '../resources/Tags/TagResource';
 import TransactionResource from '../resources/Transactions/TransactionResource';
-import { AccountTypeEnum, OwnershipTypeEnum } from '../resources/types';
-import { buildAccounts, buildTransactions } from '../utils';
-import { buildCategories, buildCategory } from '../utils/buildResources/buildCategories';
+import {
+	buildAccount,
+	buildAccounts,
+	buildTags,
+	buildTransaction,
+	buildTransactions,
+} from '../utils';
+import {
+	buildAccountGetParams,
+	buildTransactionQueryParams,
+} from '../utils/buildParams';
+import {
+	buildCategories,
+	buildCategory,
+} from '../utils/buildResources/buildCategories';
 import {
 	ErrorObject,
 	GetAccountResponse,
 	GetAccountsQueryOptions,
 	GetAccountsResponse,
 	GetTagsResponse,
+	GetTransactionResponse,
 	GetTransactionsQueryOptions,
-	ListTransactionResponse, PostTagPayload,
-	TransactionStatus,
-	UpClientOptions,
+	ListTransactionResponse,
+	PostTagPayload,
+	UpClientOptions
 } from './types';
 
-interface GetAccountsQueryParams {
-	'page[size]'?: number;
-	'filter[accountType]'?: AccountTypeEnum;
-	'filter[ownershipType]'?: OwnershipTypeEnum;
-}
-
-interface GetTransactionsQueryParams {
-	'page[size]'?: number;
-	'filter[status]'?: TransactionStatus;
-	'filter[since]'?: string;
-	'filter[until]'?: string;
-	'filter[category]'?: string;
-	'filter[tag]'?: string;
-}
-
 class UpClient {
-	private readonly clientInstance: AxiosInstance;
+	private readonly clientInstance: Axios;
 
 	/**
 	 * Creates axios client instance with relevant options to the Up API
@@ -60,93 +58,60 @@ class UpClient {
 	/**
 	 * Getter for the clientInstance property.
 	 */
-	getClientInstance(): AxiosInstance {
+	getClientInstance(): Axios {
 		return this.clientInstance;
 	}
 
-	private buildQueryParams = (options?: GetAccountsQueryOptions): GetAccountsQueryParams | undefined => {
-		if (!options) return undefined;
-
-		const params: GetAccountsQueryParams = {};
-
-		if (options.pageSize) {
-			params['page[size]'] = options.pageSize;
-		}
-
-		if (options.filterAccOwnershipType) {
-			params['filter[ownershipType]'] = options.filterAccOwnershipType;
-		}
-
-		if (options.filterAccType) {
-			params['filter[accountType]'] = options.filterAccType;
-		}
-
-		return params;
-	};
-
-	private buildTransactionQueryParams = (options: GetTransactionsQueryOptions): GetTransactionsQueryParams => {
-		const params: GetTransactionsQueryParams = {};
-
-		if (options.pageSize) {
-			params['page[size]'] = options.pageSize;
-		}
-
-		if (options.filterStatus) {
-			params['filter[status]'] = options.filterStatus;
-		}
-
-		if (options.filterSince) {
-			params['filter[since]'] = options.filterSince;
-		}
-
-		if (options.filterUntil) {
-			params['filter[until]'] = options.filterUntil;
-		}
-
-		if (options.filterCategory) {
-			params['filter[category]'] = options.filterCategory;
-		}
-
-		if (options.filterTag) {
-			params['filter[tag]'] = options.filterTag;
-		}
-
-		return params;
-	};
-
 	private buildAndThrowErrors = (e: any) => {
-		const errors: ErrorObject[] | undefined = e.response.data.errors;
+		const errors: ErrorObject[] | undefined = e.response?.data?.errors;
+
+		if (!errors) {
+			throw new UpErrorCollection([]);
+		}
+
 		const collectedErrors: UpError[] = [];
 
-		if (errors) {
-			errors.forEach(err => {
-				collectedErrors.push(new UpError(err.status, err.title, err.detail, err.source));
-			});
-		}
+		errors.forEach(err => {
+			collectedErrors.push(
+				new UpError(err.status, err.title, err.detail, err.source),
+			);
+		});
 
 		throw new UpErrorCollection(collectedErrors);
 	};
 
-	public getAccounts = async (options?: GetAccountsQueryOptions): Promise<ResourceCollection<AccountResource>> => {
+	public getAccounts = async (
+		options?: GetAccountsQueryOptions,
+	): Promise<ResourceCollection<AccountResource>> => {
 		try {
 			let reqData: AxiosResponse<GetAccountsResponse> | undefined;
 
-			const params = this.buildQueryParams(options);
+			const params = buildAccountGetParams(options);
 
 			if (params) {
-				reqData = await this.clientInstance.get<GetAccountsResponse>('/accounts', {
-					params,
-				});
+				reqData = await this.clientInstance.get<GetAccountsResponse>(
+					'/accounts',
+					{
+						params,
+					},
+				);
 			} else {
-				reqData = await this.clientInstance.get<GetAccountsResponse>('/accounts');
+				reqData = await this.clientInstance.get<GetAccountsResponse>(
+					'/accounts',
+				);
 			}
 
 			const responseData = reqData.data;
 			const accounts = responseData.data;
 
-			const convertedAccounts: AccountResource[] = buildAccounts(accounts);
+			const convertedAccounts: AccountResource[] =
+				buildAccounts(accounts);
 
-			return new ResourceCollection<AccountResource>(convertedAccounts, responseData.links, this.clientInstance);
+			return new ResourceCollection<AccountResource>(
+				convertedAccounts,
+				responseData.links,
+				this.clientInstance,
+			);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
@@ -154,38 +119,36 @@ class UpClient {
 
 	async getAccount(id: string): Promise<AccountResource | undefined> {
 		try {
-			const data = (await this.clientInstance.get<GetAccountResponse>(`/account/${id}`)).data;
-			const account = data.data;
-			const ownerShipType: OwnershipTypeEnum = account.attributes.ownershipType as OwnershipTypeEnum;
+			const data = (
+				await this.clientInstance.get<GetAccountResponse>(
+					`/account/${id}`,
+				)
+			).data;
 
-			return new AccountResource(
-				account.id,
-				{
-					accountType: account.attributes.accountType as AccountTypeEnum,
-					balance: account.attributes.balance,
-					createdAt: new Date(account.attributes.createdAt),
-					displayName: account.attributes.displayName,
-					ownershipType: ownerShipType,
-				},
-				account.relationships,
-			);
+			return buildAccount(data.data, this.clientInstance);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
 	}
 
-	public getTransactions = async (
+	private makeTransactionsGetCall = async (
+		url: string,
 		options?: GetTransactionsQueryOptions,
-	): Promise<ResourceCollection<TransactionResource>> => {
+	) => {
 		try {
 			let listResponse;
 			if (options) {
-				const params = this.buildTransactionQueryParams(options);
-				listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions', {
-					params,
-				});
+				const params = buildTransactionQueryParams(options);
+				listResponse =
+					await this.clientInstance.get<ListTransactionResponse>(
+						url,
+						{
+							params,
+						},
+					);
 			} else {
-				listResponse = await this.clientInstance.get<ListTransactionResponse>('/transactions');
+				listResponse =
+					await this.clientInstance.get<ListTransactionResponse>(url);
 			}
 			const transactionData = listResponse.data;
 
@@ -201,14 +164,53 @@ class UpClient {
 		}
 	};
 
-	public getCategories = async (): Promise<ResourceCollection<CategoryResource>> => {
+	public getTransaction = async (transactionId: string) => {
+		try {
+			const {
+				data: { data: transaction },
+			} = await this.clientInstance.get<GetTransactionResponse>(
+				`/transactions/${transactionId}`,
+			);
+			console.log(transaction);
+
+			return buildTransaction(transaction, this.clientInstance);
+		} catch (e) {
+			if (e instanceof Error) {
+				throw this.buildAndThrowErrors(e);
+			}
+		}
+	};
+
+	public getTransactions = async (
+		options?: GetTransactionsQueryOptions,
+	): Promise<ResourceCollection<TransactionResource>> => {
+		return await this.makeTransactionsGetCall('/transactions', options);
+	};
+
+	public getTransactionsByAccount = async (
+		accountId: string,
+		options?: GetTransactionsQueryOptions,
+	): Promise<ResourceCollection<TransactionResource>> => {
+		return await this.makeTransactionsGetCall(
+			`/accounts/${accountId}/transactions`,
+			options,
+		);
+	};
+
+	public getCategories = async (): Promise<
+		ResourceCollection<CategoryResource>
+	> => {
 		try {
 			const res = await this.clientInstance.get('/categories');
 			const categoryData = res.data;
 
 			const builtCategories = buildCategories(categoryData.data);
 
-			return new ResourceCollection<CategoryResource>(builtCategories, {}, this.clientInstance);
+			return new ResourceCollection<CategoryResource>(
+				builtCategories,
+				{},
+				this.clientInstance,
+			);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
@@ -230,39 +232,53 @@ class UpClient {
 			const res = await this.clientInstance.get<GetTagsResponse>('/tags');
 			const tagData = res.data;
 
-			return new ResourceCollection<TagResource>(tagData.data, tagData.links, this.clientInstance);
+			return new ResourceCollection<TagResource>(
+				buildTags(tagData.data),
+				tagData.links,
+				this.clientInstance,
+			);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
 	};
 
-	public addTagsToTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
+	public addTagsToTransaction = async (
+		transactionId: string,
+		payload: PostTagPayload[],
+	): Promise<boolean> => {
 		try {
-			const res = await this.clientInstance.post(`/transactions/${transactionId}/relationships/tags`, {
-				data: payload
-			});
-			// tslint:disable-next-line:no-console
-			console.log(res);
+			const res = await this.clientInstance.post(
+				`/transactions/${transactionId}/relationships/tags`,
+				{
+					data: payload,
+				},
+			);
 
 			return res.status === 204;
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
-	}
+	};
 
-	public removeTagsFromTransaction = async (transactionId: string, payload: PostTagPayload[]): Promise<boolean> => {
+	public removeTagsFromTransaction = async (
+		transactionId: string,
+		payload: PostTagPayload[],
+	): Promise<boolean> => {
 		try {
-			const res = await this.clientInstance.delete(`/transactions/${transactionId}/relationships/tags`, {
-				data: {
-					data: payload
-				}
-			});
+			const res = await this.clientInstance.delete(
+				`/transactions/${transactionId}/relationships/tags`,
+				{
+					data: {
+						data: payload,
+					},
+				},
+			);
 
 			return res.status === 204;
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
-	}
+	};
 }
 
 export default UpClient;

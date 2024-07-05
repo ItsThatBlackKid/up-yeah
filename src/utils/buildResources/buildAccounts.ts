@@ -1,10 +1,12 @@
+import { Axios } from 'axios';
 import { AccountResourceResponse } from '../../client';
 import AccountResource from '../../resources/Account/AccountResource';
 import { AccountTypeEnum, OwnershipTypeEnum } from '../../resources/types';
 
-export const buildAccount = (account: AccountResourceResponse): AccountResource => {
+export const buildAccount = (account: AccountResourceResponse, client?: Axios): AccountResource => {
 	const { id, attributes, relationships } = account;
-	return new AccountResource(
+
+	const acc = new AccountResource(
 		id,
 		{
 			...attributes,
@@ -14,15 +16,19 @@ export const buildAccount = (account: AccountResourceResponse): AccountResource 
 		},
 		relationships,
 	);
+
+	if(client) acc.setClient(client);
+
+	return  acc;
 };
 
-export const buildAccounts = (accounts: AccountResourceResponse[]): AccountResource[] => {
+export const buildAccounts = (accounts: AccountResourceResponse[], client?: Axios): AccountResource[] => {
 	if (!accounts || accounts.length === 0) {
 		return [];
 	}
 	const resources: AccountResource[] = [];
 	accounts.forEach(account => {
-		resources.push(buildAccount(account));
+		resources.push(buildAccount(account, client));
 	});
 
 	return resources;
