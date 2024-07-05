@@ -36,7 +36,7 @@ import {
 	GetTransactionsQueryOptions,
 	ListTransactionResponse,
 	PostTagPayload,
-	UpClientOptions
+	UpClientOptions,
 } from './types';
 
 class UpClient {
@@ -212,6 +212,26 @@ class UpClient {
 				this.clientInstance,
 			);
 		} catch (e: any) {
+			throw this.buildAndThrowErrors(e);
+		}
+	};
+
+	public categorizeTransaction = async (
+		transactionId: string,
+		category: string
+	): Promise<boolean> => {
+		try {
+			const res = await this.clientInstance.patch(
+				`/transactions/${transactionId}/relationships/category`,
+				{
+					data: {
+						type: 'categories',
+						id: category
+					}
+				}
+			);
+			return res.status === 204;
+		} catch (e) {
 			throw this.buildAndThrowErrors(e);
 		}
 	};

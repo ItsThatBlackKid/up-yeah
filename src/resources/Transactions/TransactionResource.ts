@@ -1,5 +1,6 @@
 import { AccountResourceResponse } from '../../client';
 import { buildAccounts } from '../../utils';
+import { buildAndThrowErrors } from '../../utils/buildAndThrowErrors';
 import Resource, { IResource } from '../Resource/Resource';
 import {
 	CardPurchaseMethodObject,
@@ -29,10 +30,7 @@ export interface ITransactionResource extends IResource {
 	relationships: TransactionRelationships;
 }
 
-export default class TransactionResource
-	extends Resource
-	implements ITransactionResource
-{
+export default class TransactionResource extends Resource implements ITransactionResource {
 	amount: MoneyObject;
 	cardPurchaseMethod?: CardPurchaseMethodObject;
 	cashBack?: CashbackObject;
@@ -79,5 +77,29 @@ export default class TransactionResource
 		);
 
 		return buildAccounts(accounts.data);
+	}
+
+	public async categorizeTransaction(
+		transactionId: string,
+		category: string,
+	): Promise<boolean> {
+		if (!this.client) {
+			throw new Error('Client must be created first');
+		}
+
+		try {
+			const res = await this.client.patch(
+				`/transactions/${transactionId}/relationships/category`,
+				{
+					data: {
+						type: 'categories',
+						id: category,
+					},
+				},
+			);
+			return res.status === 204;
+		} catch (e) {
+			throw buildAndThrowErrors(e);
+		}
 	}
 }

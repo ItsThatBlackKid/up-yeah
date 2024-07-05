@@ -84,7 +84,7 @@ describe('TransactionResource', () => {
 
 			expect(mockAxios.get).toHaveBeenCalledWith(
 				'http://some.up.au/api/v1/accounts/mock-id',
-				undefined
+				undefined,
 			);
 			expect(account).toBeInstanceOf(Array<AccountResource[]>);
 		});
@@ -140,6 +140,90 @@ describe('TransactionResource', () => {
 			expect(transaction.getAccount()).rejects.toThrow(
 				new UpErrorCollection([mockUpError]),
 			);
+		});
+	});
+
+	describe('categorizeTransaction', () => {
+		const transaction: TransactionResource = new TransactionResource(
+			'1',
+			mockAttributes,
+			mockRelationShips,
+		);
+
+		beforeEach(() => {
+			transaction.setClient(mockAxios as unknown as Axios);
+		});
+
+		describe('categorizeTransaction', () => {
+			it('should make PATCH call to /transactions/{transactionId}/relationships/category', async () => {
+				mockAxios.patch.mockResolvedValue({ status: 204 });
+				await transaction.categorizeTransaction(
+					'mock-id',
+					'restaurants-and-cafes',
+				);
+
+				expect(mockAxios.patch).toHaveBeenCalledWith(
+					'/transactions/mock-id/relationships/category',
+					{
+						data: {
+							type: 'categories',
+							id: 'restaurants-and-cafes',
+						},
+					},
+				);
+			});
+
+			it('should return true if the PATCH call returns 204', async () => {
+				mockAxios.patch.mockResolvedValue({
+					status: 204,
+				});
+
+				const res = await transaction.categorizeTransaction(
+					'mock-id',
+					'restaurants-and-cafes',
+				);
+
+				expect(res).toBe(true);
+			});
+
+			it('should return false if PATCH call responds otherwise', async () => {
+				mockAxios.patch.mockResolvedValue({
+					status: 200,
+				});
+
+				const res = await transaction.categorizeTransaction(
+					'mock-id',
+					'restaurants-and-cafes',
+				);
+
+				expect(res).toBe(false);
+			});
+
+			it('should throw UpError if api returns an error', async () => {
+				const mockUpError: IUpError = {
+					status: '404',
+					title: 'Bad request',
+					detail: 'Some of the information provided is invalid',
+					source: {
+						parameter: 'x',
+						pointer: '0',
+					},
+				};
+				mockAxios.patch.mockRejectedValue({
+					response: {
+						data: {
+							errors: [mockUpError],
+						},
+					},
+				});
+
+				await expect(async () => {
+					await transaction.categorizeTransaction(
+						'mock-id',
+						'restaurants-and-cafes',
+					);
+				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
+			});
 		});
 	});
 });

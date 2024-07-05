@@ -6,14 +6,11 @@ import {
 	mockUpListAccountsEmpty,
 } from '../../__mocks__/accountData';
 import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
-import {
-	mockTagPayload,
-	mockTagsResponse
-} from '../../__mocks__/tagData';
+import { mockTagPayload, mockTagsResponse } from '../../__mocks__/tagData';
 import {
 	mockListTransactionsResponse,
 	mockTransactionResponse,
-	mockUpGetTransactionsEmpty
+	mockUpGetTransactionsEmpty,
 } from '../../__mocks__/transactionData';
 import { IUpError } from '../../errors';
 import UpErrorCollection from '../../errors/UpErrorCollection';
@@ -37,7 +34,7 @@ import {
 	GetAccountsQueryOptions,
 	GetTransactionsQueryOptions,
 	PostTagPayload,
-	TransactionStatus
+	TransactionStatus,
 } from '../types';
 
 jest.mock('../../utils/buildParams/');
@@ -163,7 +160,9 @@ describe('Up Client', () => {
 					},
 				);
 
-				expectedAccountResource.setClient(mockAxios as unknown as AxiosInstance)
+				expectedAccountResource.setClient(
+					mockAxios as unknown as AxiosInstance,
+				);
 
 				expect(account).toEqual(expectedAccountResource);
 			});
@@ -196,22 +195,26 @@ describe('Up Client', () => {
 	describe('Transactions', () => {
 		describe('getTransaction', () => {
 			it('should make GET call to /transactions/{id} when invoked', async () => {
-				mockAxios.get.mockResolvedValue({data: {data: mockTransactionResponse}});
+				mockAxios.get.mockResolvedValue({
+					data: { data: mockTransactionResponse },
+				});
 
 				await client.getTransaction('mock-id');
 
-				expect(mockAxios.get).toHaveBeenCalledWith('/transactions/mock-id');
+				expect(mockAxios.get).toHaveBeenCalledWith(
+					'/transactions/mock-id',
+				);
 			});
 
 			it('should return transaction', async () => {
-				mockAxios.get.mockResolvedValue({data: {data: mockTransactionResponse}});
+				mockAxios.get.mockResolvedValue({
+					data: { data: mockTransactionResponse },
+				});
 
 				const transaction = await client.getTransaction('mock-id');
 
-				expect(transaction).toBeInstanceOf(
-					TransactionResource
-				);
-			})
+				expect(transaction).toBeInstanceOf(TransactionResource);
+			});
 		});
 
 		describe('getTransactions', () => {
@@ -416,6 +419,75 @@ describe('Up Client', () => {
 				await expect(async () => {
 					await client.getCategory('good-bye');
 				}).rejects.toThrow(new UpErrorCollection([mockUpError]));
+			});
+
+			describe('categorizeTransaction', () => {
+				it('should make PATCH call to /transactions/{transactionId}/relationships/category', async () => {
+					mockAxios.patch.mockResolvedValue({ status: 204 });
+					await client.categorizeTransaction('mock-id', 'restaurants-and-cafes');
+
+					expect(mockAxios.patch).toHaveBeenCalledWith(
+						'/transactions/mock-id/relationships/category',
+						{
+							data: {
+								type: 'categories',
+								id: 'restaurants-and-cafes'
+							}
+						}
+					);
+				});
+
+				it('should return true if the PATCH call returns 204', async () => {
+					mockAxios.patch.mockResolvedValue({
+						status: 204,
+					});
+
+					const res = await client.categorizeTransaction(
+						'mock-id',
+						'restaurants-and-cafes',
+					);
+
+					expect(res).toBe(true);
+				});
+
+				it('should return false if PATCH call responds otherwise', async () => {
+					mockAxios.patch.mockResolvedValue({
+						status: 200,
+					});
+
+					const res = await client.categorizeTransaction(
+						'mock-id',
+						'restaurants-and-cafes',
+					);
+
+					expect(res).toBe(false);
+				});
+
+				it('should throw UpError if api returns an error', async () => {
+					const mockUpError: IUpError = {
+						status: '404',
+						title: 'Bad request',
+						detail: 'Some of the information provided is invalid',
+						source: {
+							parameter: 'x',
+							pointer: '0',
+						},
+					};
+					mockAxios.patch.mockRejectedValue({
+						response: {
+							data: {
+								errors: [mockUpError],
+							},
+						},
+					});
+
+					await expect(async () => {
+						await client.categorizeTransaction(
+							'mock-id',
+							'restaurants-and-cafes',
+						);
+					}).rejects.toThrow(new UpErrorCollection([mockUpError]));
+				});
 			});
 		});
 	});
