@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "\"./node_modules/.bin/jest 2\" --coverage",
+    "test": "\"./node_modules/.bin/jest\" --coverage",
     "build": "tsc",
     "clean": "rm -rf ./lib",
     "lint": "npx eslint",
