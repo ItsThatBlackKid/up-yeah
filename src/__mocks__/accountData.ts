@@ -62,25 +62,31 @@ export const mockUpAccountsResponse: GetAccountsResponse = {
 
 export const mockGetAccountResponse = {
 	data: {
-		data: {
-			type: 'accounts',
-			id: 'mockId',
-			attributes: {
-				displayName: 'up-yeah',
-				accountType: 'TRANSACTIONAL',
-				ownershipType: 'INDIVIDUAL',
-				balance: {
-					currencyCode: 'AUD',
-					value: '4.20',
-					valueInBaseUnits: 420,
+		data: [
+			{
+				type: 'accounts',
+				id: 'mockId',
+				attributes: {
+					displayName: 'up-yeah',
+					accountType: 'TRANSACTIONAL',
+					ownershipType: 'INDIVIDUAL',
+					balance: {
+						currencyCode: 'AUD',
+						value: '4.20',
+						valueInBaseUnits: 420,
+					},
+					createdAt: '2021-09-23T01:12:00+10:00',
 				},
-				createdAt: '2021-09-23T01:12:00+10:00',
-			},
-			relationships: {
-				transactions: {
-					data: [],
+				relationships: {
+					transactions: {
+						data: [],
+					},
 				},
 			},
+		],
+		links: {
+			prev: 'http://some.up.au/api/v1/account/endpoint/1',
+			next: 'http://some.up.au/api/v1/account/endpoint/2',
 		},
 	},
 };

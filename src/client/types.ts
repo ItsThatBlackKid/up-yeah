@@ -92,7 +92,7 @@ export type GetAccountsResponse = {
 };
 
 export type GetAccountResponse = {
-	data: AccountResourceResponse;
+	data: AccountResourceResponse[];
 	links: ResponseLinks;
 };
 
