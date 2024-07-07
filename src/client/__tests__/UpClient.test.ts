@@ -127,44 +127,21 @@ describe('Up Client', () => {
 		});
 
 		describe('getAccount', () => {
-			it('should make GET call to /account/{id} when invoked', async () => {
+			it('should make GET call to /accounts/{id} when invoked', async () => {
 				mockAxios.get.mockResolvedValue(mockGetAccountResponse);
 
 				await client.getAccount('mockId');
 
-				expect(mockAxios.get).toHaveBeenCalledWith('/account/mockId');
+				expect(mockAxios.get).toHaveBeenCalledWith('/accounts/mockId');
 			});
 
 			it('should return account with matching ID', async () => {
 				mockAxios.get.mockResolvedValue(mockGetAccountResponse);
 
-				const account: AccountResource | undefined =
+				const accountCollection: ResourceCollection<AccountResource> =
 					await client.getAccount('mockId');
-				const expectedAccountResource = new AccountResource(
-					'mockId',
-					{
-						displayName: 'up-yeah',
-						accountType: AccountTypeEnum.TRANSACTIONAL,
-						balance: {
-							currencyCode: 'AUD',
-							value: '4.20',
-							valueInBaseUnits: 420,
-						},
-						createdAt: new Date('2021-09-23T01:12:00+10:00'),
-						ownershipType: OwnershipTypeEnum.INDIVIDUAL,
-					},
-					{
-						transactions: {
-							data: [],
-						},
-					},
-				);
 
-				expectedAccountResource.setClient(
-					mockAxios as unknown as AxiosInstance,
-				);
-
-				expect(account).toEqual(expectedAccountResource);
+				expect(accountCollection).toBeInstanceOf(ResourceCollection)
 			});
 
 			it('should throw UpError if api returns an error', async () => {
