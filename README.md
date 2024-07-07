@@ -115,7 +115,7 @@ For more info, checkout [API](#api)
 
 ##### Using `ResourceCollection`
 
-The `ResourceCollection` class holds an array of resources and allows for pagination through convenience methods.
+The `ResourceCollection` class holds an array of resources and allows for pagination through the use of `next` and `prev`  methods.
 
 Example:
 
@@ -175,3 +175,132 @@ async function getAccounts() {
 ```
 
 ## API
+
+### `UpClient` `(src/client/UpClient.ts)` 
+A class that exposes the Up API endpoints in its methods, using `axios` to handle requests. 
+
+Returns: an `UpClient` object.
+
+#### `options: UpClientOptions`
+UpClient options passed to parameter
+* `personalAccessToken` - Up Personal Access Token   
+```typescript
+interface UpClientOptions {
+	personalAccessToken: string;
+};
+```
+
+#### Methods
+
+
+`getClientInstance(): Axios` - Getter for the clientInstance property
+* Returns: `Axios` instance created by client
+
+`getAccounts(options?)` - Get a paginated list of all accounts for the currently authenticated user.
+* Ref: [List Accounts](https://developer.up.com.au/#get_accounts)
+* Request: `GET /accounts`
+* Returns: `Promise<ResourceCollection<AccountResource>>`
+* Parameters:
+  * `options?: GetAccountsQueryOptions` - Params to be provided to the endpoint.
+
+`getAccount(id)` - Get account with matching `id`.
+* Ref: [Retrieve Account](https://developer.up.com.au/#get_accounts_id)
+* Request: `GET /accounts/{id}`
+* Returns: `Promise<ResourceCollection<AccountResource>>`
+* Parameters:
+    * `id: string` - The unique idenifier of the account.
+
+`getTransaction(transactionId)` - Get the transaction with matching `id`.
+* Ref: [Retrieve Transaction](https://developer.up.com.au/#get_transactions_id)
+* Request: `GET /transactions/{id}`.
+* Returns: `Promise<TransactionResource>`
+* Parameters: 
+  * `transactionId: string` - The unique identifier of the transaction
+
+
+`getTransactions(options?)` - Get a paginated list of all transactions across all accounts.
+
+* Ref: [List Transactions](https://developer.up.com.au/#get_transactions)
+* Request: `GET /transactions`
+* Returns: `Promise<ResourceCollection<TransactionResource>>`
+* Parameters:
+  * `options?: GetTransactionsQueryOptions`
+
+`getTransactionsByAccount(accountId: string, options?)` - Get a list of transactions based on a unique account identifier
+
+* Ref: [List transactions by account](https://developer.up.com.au/#get_accounts_accountId_transactions)
+* Request: `GET /accounts/{accountId}/transactions`
+* Returns: `Promise<ResourceCollection<TransactionResource>>`
+* Parameters:
+  * `accountId` - the unique account identifier.
+  * `options?: GetTransactionsQueryOptions` - request query params.
+
+`getCategories()` - Get a non-paginated list of categories and their ancestry
+* Ref: [List categories](https://developer.up.com.au/#get_categories)
+* Request: `GET /categories`
+* Returns: `Promise<ResourceCollection<CategroyResource>>`
+
+`categorizeTransaction(transactionId,category)` - Update the category associated with a transaction
+* Ref: [Categorize transaction](https://developer.up.com.au/#patch_transactions_transactionId_relationships_category)
+* Request: `PATCH /transactions/{transactionId}/relationships/category`
+* Returns: `Promise<boolean>`
+* Parameters:
+  * `transactionId: string` - the unique identifier of the transaction
+  * `category` - the category to update the transaction with
+
+`getCategory(id: string)`
+* Ref: [Retrieve a category](https://developer.up.com.au/#get_categories_id)
+* Request: `GET /categories/{id}`
+* Returns: `Promise<CategoryResource>`
+* Paramaters: 
+  * `id: string` - the category to retrieve.
+
+`getTags()` - Get a paginated list of all tags in use.
+Ref: [List tags](https://developer.up.com.au/#get_tags)
+* Request: `GET /tags`
+* Returns: `Promise<ResourceCollection<TagResource>>`
+
+`addTagsToTransaction(transactionId, payload)` - Associate one or more tags with a specific transaction.
+* Ref: [Add tags to transaction](https://developer.up.com.au/#post_transactions_transactionId_relationships_tags)
+* Request: `POST /transactions/{transactionId}/relationships/tags`
+* Returns: `Promise<boolean>`
+* Parameters:
+  * `transactionId: string` - the unique transaction identifier 
+  * `paylod:  PostTagPayload[]` - the list of tags to associate with the transaction
+
+`removeTagsFromTransaction(transactionId)`
+* Ref: [Remove tags from transaction](https://developer.up.com.au/#delete_transactions_transactionId_relationships_tags)
+* Request: `DELETE /transactions/{transactionId}/relationships/tags`
+* Returns: `Promise<boolean>` 
+* Parameters: 
+  * `transactionId: string` - the unique transaction identifier
+
+
+***
+### `ResourceCollection` `src/resources/Resource/ResourceCollection.ts`
+A pagination wrapper for Up resources. 
+
+The class takes a generic which must extend the `Resource` class. 
+
+Pagination is offered through the `prev()` and `next()` methods.
+
+#### Methods
+
+`prev()` - Retrieve the previous list of pages if available.
+  
+`next()` - Retrieve the next list of page if available.
+
+***
+### Types
+
+`GetAccountsQueryOptions` - Typescript interface for the List Accounts params.
+* `pageSize` - the number of records to return in each page.
+* `filterAccType` - the type of account for which to return records. This can be used to filter Savers from spending accounts.
+* `filterAccOwnershipType` - the account ownership structure for which to return records. This can be used to filter 2Up accounts from Up accounts.
+ ```typescript
+ interface GetAccountsQueryOptions {
+	pageSize?: number;
+	filterAccType?: AccountTypeEnum;
+	filterAccOwnershipType?: OwnershipTypeEnum;
+};
+ ```
