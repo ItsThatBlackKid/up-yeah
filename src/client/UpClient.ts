@@ -12,10 +12,11 @@ import ResourceCollection from '../resources/Resource/ResourceCollection';
 import TagResource from '../resources/Tags/TagResource';
 import TransactionResource from '../resources/Transactions/TransactionResource';
 import {
+	buildAccount,
 	buildAccounts,
 	buildTags,
 	buildTransaction,
-	buildTransactions
+	buildTransactions,
 } from '../utils';
 import {
 	buildAccountGetParams,
@@ -116,15 +117,15 @@ class UpClient {
 		}
 	};
 
-	async getAccount(id: string): Promise<ResourceCollection<AccountResource>> {
+	async getAccount(id: string): Promise<AccountResource | undefined> {
 		try {
 			const data = (
 				await this.clientInstance.get<GetAccountResponse>(
-					`/accounts/${id}`,
+					`/account/${id}`,
 				)
 			).data;
 
-			return new ResourceCollection<AccountResource>(buildAccounts(data.data, this.clientInstance), data.links, this.clientInstance);
+			return buildAccount(data.data, this.clientInstance);
 		} catch (e: any) {
 			throw this.buildAndThrowErrors(e);
 		}
