@@ -43,7 +43,8 @@
   },
   "resolutions": {
     "follow-redirects": ">=1.15.4",
-    "@babel/traverse": ">=7.23.2"
+    "@babel/traverse": ">=7.23.2",
+    "braces": ">=3.0.3"
   },
   "overrides": {
     "follow-redirects": ">=1.15.4",
