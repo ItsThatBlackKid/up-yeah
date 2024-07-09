@@ -1,20 +1,60 @@
-import UpClient from "../lib/client/UpClient";
-import {GetAccountsQueryOptions} from "../lib/client/types";
-import {OwnershipTypeEnum} from "../lib/resources/types";
-
-const client = new UpClient({
-    personalAccessToken: '<up api token here>'
-})
+import { GetAccountsQueryOptions, GetTransactionsQueryOptions } from '../lib';
+import TransactionResource from '../lib/resources/Transactions/TransactionResource';
+import { client } from './client';
+import { runExample } from './util';
 
 const listTransactions = async () => {
-    const transactions = await client.listTransactions();
-    const transaction1 = transactions[0];
-    // tslint:disable-next-line:no-console
-    console.log(transactions);
-    // tslint:disable-next-line:no-console
-    console.log(transaction1.relationships)
+	const transactions = await client.getTransactions();
+	const transaction1: TransactionResource = transactions.resources[0];
+
+	console.log(transactions);
+	console.log(transaction1.relationships);
+	console.log(await transaction1.getAccount());
+};
+
+const getTransactionsWithOptions = async () => {
+	const options: GetTransactionsQueryOptions = {
+		pageSize: 2,
+		filterCategory: 'good-life',
+	};
+
+	const collection = await client.getTransactions(options);
+
+	collection.resources.forEach(res => {
+		console.log(res);
+	});
+
+	const resources = await collection.next();
+	collection.resources.forEach(res => {
+		console.log(res);
+	});
+
+    resources!.forEach(res => {
+		console.log(res);
+	});
+};
+
+const getTransactionAccount = async () => {
+	const transactions = await client.getTransactions();
+	const transaction = transactions.resources[0];
+	const account = await transaction.getAccount();
+
+	console.log(transaction);
+	console.log(account);
+};
+
+const getTransactionsByAccount = async () => {
+	const options: GetAccountsQueryOptions = {};
+	const transactions = await client.getTransactionsByAccount(
+		'some-account-id',
+		options,
+	);
+
+	console.log(transactions.resources.slice(0, 10));
 };
 
 (async () => {
-    await listTransactions();
+    // await runExample('List Transactions', listTransactions);
+    // await runExample('Get Transactions With Options', getTransactionsWithOptions);
+    // await runExample('Get Account By Transaction', getTransactionAccount)
 })();

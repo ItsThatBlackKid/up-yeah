@@ -1,6 +1,10 @@
-import UpClient from '../lib/client/UpClient';
+import UpClient, { UpClientOptions } from '../lib/client';
 
-export const client = new UpClient({
+const options: UpClientOptions = {
 	personalAccessToken: process.env.UP_TOKEN as string
-});
+};
+
+
+export const client = new UpClient(options);
+
 
