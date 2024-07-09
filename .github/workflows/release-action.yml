@@ -58,7 +58,6 @@ jobs:
           name: up-yeah@${{steps.semver.outputs.next}}.tgz
           path: lib/*.tgz
           retention-days: 90
-        
       - name: Download up-yeah${{inputs.tag}}
         id: download
         uses: actions/download-artifact@v4
