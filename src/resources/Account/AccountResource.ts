@@ -59,7 +59,7 @@ export default class AccountResource
 		);
 
 		return new ResourceCollection(
-			buildTransactions(data),
+			buildTransactions(data as TransactionResponse[]),
 			links,
 			this.client!,
 		);
