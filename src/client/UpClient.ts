@@ -164,7 +164,9 @@ class UpClient {
 		}
 	};
 
-	public getTransaction = async (transactionId: string) => {
+	public getTransaction = async (
+		transactionId: string,
+	): Promise<TransactionResource> => {
 		try {
 			const {
 				data: { data: transaction },
@@ -174,9 +176,7 @@ class UpClient {
 
 			return buildTransaction(transaction, this.clientInstance);
 		} catch (e) {
-			if (e instanceof Error) {
-				throw this.buildAndThrowErrors(e);
-			}
+			throw this.buildAndThrowErrors(e);
 		}
 	};
 
@@ -217,7 +217,7 @@ class UpClient {
 
 	public categorizeTransaction = async (
 		transactionId: string,
-		category: string
+		category: string,
 	): Promise<boolean> => {
 		try {
 			const res = await this.clientInstance.patch(
@@ -225,9 +225,9 @@ class UpClient {
 				{
 					data: {
 						type: 'categories',
-						id: category
-					}
-				}
+						id: category,
+					},
+				},
 			);
 			return res.status === 204;
 		} catch (e) {
