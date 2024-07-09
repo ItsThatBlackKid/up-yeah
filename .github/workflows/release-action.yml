@@ -69,6 +69,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: chmod +x scripts/build-install.sh
       - run: ./scripts/build-install.sh
-      - run: npm publish --provenance --access public ${{steps.semver.outputs.next}}
+      - run: npm publish --provenance --access public ${{steps.download.outputs.download-path}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
