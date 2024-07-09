@@ -260,6 +260,7 @@ Ref: [List tags](https://developer.up.com.au/#get_tags)
 * Request: `GET /tags`
 * Returns: `Promise<ResourceCollection<TagResource>>`
 
+
 `addTagsToTransaction(transactionId, payload)` - Associate one or more tags with a specific transaction.
 * Ref: [Add tags to transaction](https://developer.up.com.au/#post_transactions_transactionId_relationships_tags)
 * Request: `POST /transactions/{transactionId}/relationships/tags`
@@ -267,6 +268,7 @@ Ref: [List tags](https://developer.up.com.au/#get_tags)
 * Parameters:
   * `transactionId: string` - the unique transaction identifier 
   * `paylod:  PostTagPayload[]` - the list of tags to associate with the transaction
+
 
 `removeTagsFromTransaction(transactionId)`
 * Ref: [Remove tags from transaction](https://developer.up.com.au/#delete_transactions_transactionId_relationships_tags)
@@ -288,7 +290,25 @@ Pagination is offered through the `prev()` and `next()` methods.
 
 `prev()` - Retrieve the previous list of pages if available.
   
-`next()` - Retrieve the next list of page if available.
+`next()` - Retrieve the next list of pages if available.
+***
+### `AccountResource`
+A class which encapsulates an Up Account resource. 
+
+#### Methods
+`getTransactions(options?)` - Get paginated list of transactions for an account
+* Request: `GET /accounts/this.id/transactions`
+* Returns: `Promise<ResourceCollection<AccountResource>>`
+* Parameters:
+	* `options?: GetTransactionsQueryOptions` - options to pass as params to the request.
+
+### `TransactionResource`
+A class which encapsulates an Up Transaction. 
+
+#### Methods
+`getAccount()` - Get paginated list of transactions for an account
+* Request: `GET /accounts/{id}/transactions`
+* Returns: `Promise<AccountResource>`
 
 ***
 ### Types
@@ -302,5 +322,22 @@ Pagination is offered through the `prev()` and `next()` methods.
 	pageSize?: number;
 	filterAccType?: AccountTypeEnum;
 	filterAccOwnershipType?: OwnershipTypeEnum;
+};
+ ```
+
+ `GetTransactionsQueryOptions` - Typescript interface for the List Transactions query params
+ * `pageSize` - the number of records to return in each page.
+ * `filterStatus` - filter the transactions by transaction status.
+ * `filterSince` - filter transactions made since the specified date
+ * `filterUntil` - filter transactions made up to the specified date
+ * `filterTag` - filter by tags, includes only transactions with the specified tag.
+ ```typescript
+interface GetTransactionsQueryOptions {
+	pageSize?: number;
+	filterStatus?: TransactionStatus;
+	filterSince?: string;
+	filterUntil?: string;
+	filterCategory?: string;
+	filterTag?: string;
 };
  ```
