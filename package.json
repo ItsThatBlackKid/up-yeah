@@ -1,11 +1,15 @@
 {
   "name": "up-yeah",
   "version": "1.0.0",
-  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ItsThatBlackKid/up-yeah.git"
+  },
+  "description": "A Typescript client for the Up Personal Banking API",
   "main": "index.js",
   "scripts": {
     "test": "\"./node_modules/.bin/jest\" --coverage",
-    "build": "tsc",
+    "build": "yarn clean && scripts/npm-build.sh && tsc",
     "clean": "rm -rf ./lib",
     "lint": "npx eslint",
     "lint:fix": "npx eslint --fix",
@@ -15,7 +19,10 @@
     "up",
     "up bank",
     "up api",
-    "up banking api"
+    "up banking api",
+    "up personal banking",
+    "up banking",
+    "banking"
   ],
   "author": "Sao Kanneh",
   "files": [
