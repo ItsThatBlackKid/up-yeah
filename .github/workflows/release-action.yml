@@ -61,7 +61,7 @@ jobs:
           name: up-yeah@${{steps.semver.outputs.next}}.tgz
           path: lib/*.tgz
           retention-days: 90
-      - name: Download up-yeah${{steps.semver.outputs.next}}
+      - name: Download up-yeah${{steps.semver.outputs.next}}.tgz
         id: download
         uses: actions/download-artifact@v4
         with: 
@@ -72,6 +72,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: chmod +x scripts/build-install.sh
       - run: ./scripts/build-install.sh
-      - run: npm publish --provenance --access public up-yeah@${{steps.semver.outputs.next}}
+      - run: npm publish --provenance --access public up-yeah@${{steps.semver.outputs.next}}.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
