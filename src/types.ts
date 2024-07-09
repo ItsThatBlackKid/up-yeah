@@ -39,6 +39,6 @@ export type ResourceResponseData = {
 };
 
 export type ResourceResponse <T> = {
-	data: Array<T>;
+	data: Array<T> | T;
 	links: ResponseLinks;
 };

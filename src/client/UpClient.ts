@@ -171,7 +171,6 @@ class UpClient {
 			} = await this.clientInstance.get<GetTransactionResponse>(
 				`/transactions/${transactionId}`,
 			);
-			console.log(transaction);
 
 			return buildTransaction(transaction, this.clientInstance);
 		} catch (e) {

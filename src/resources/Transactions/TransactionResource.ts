@@ -1,5 +1,5 @@
 import { AccountResourceResponse } from '../../client';
-import { buildAccounts } from '../../utils';
+import { buildAccount } from '../../utils';
 import { buildAndThrowErrors } from '../../utils/buildAndThrowErrors';
 import Resource, { IResource } from '../Resource/Resource';
 import {
@@ -76,7 +76,7 @@ export default class TransactionResource extends Resource implements ITransactio
 			this.relationships.account.links?.related,
 		);
 
-		return buildAccounts(accounts.data);
+		return buildAccount(accounts.data as AccountResourceResponse);
 	}
 
 	public async categorizeTransaction(
