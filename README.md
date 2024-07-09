@@ -111,7 +111,7 @@ const accounts = await client.getAccounts(options);
 const transactions = await accounts[0].getTransactions();
 ```
 
-For more info, checkout [API](#api)
+For more info, checkout [API](#api) and look checkout the examples!
 
 ##### Using `ResourceCollection`
 
@@ -341,3 +341,10 @@ interface GetTransactionsQueryOptions {
 	filterTag?: string;
 };
  ```
+ ***
+
+ ### More...
+ For more information about a specific type or method in this library, I recommend reading the code. 
+
+If you're looking to learn more about the Up API then the best place to start is https://developer.up.com.au.
+

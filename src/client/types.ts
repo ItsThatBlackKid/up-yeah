@@ -137,7 +137,7 @@ export type TagResponse = {
 	relationships: TagRelationships;
 };
 
-export type PostTagPayload = {
+export interface PostTagPayload {
 	type: 'tags',
 	id: string;
 }
