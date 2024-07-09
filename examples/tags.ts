@@ -1,4 +1,5 @@
 import {client}  from './client';
+import { runExample } from './util';
 
 const getTags = async () => {
 	const tags = await client.getTags();
@@ -18,9 +19,11 @@ const tagTransaction = async () => {
 			id: 'random'
 		}
 	])
+
+	console.log('Tag Transaction Status: ', sucess);
 }
 
 (async () => {
-	await tagTransaction();
-	await getTags()
+	// await runExample('Tag Transaction', tagTransaction);
+	// await runExample('Get Tags', getTags);
 })();
