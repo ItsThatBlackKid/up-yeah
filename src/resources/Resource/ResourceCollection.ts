@@ -102,7 +102,8 @@ export default class ResourceCollection<T extends Resource> implements IResource
 
 			throw new UpErrorCollection(collectedErrors);
 		}
-		if (!res || !res.data.data || res.data.data.length === 0) {
+		
+		if (!res || !res.data.data || (res.data.data as unknown as []).length === 0) {
 			return null;
 		}
 

@@ -29,7 +29,7 @@ export interface GetTransactionsQueryParams {
 	'filter[tag]'?: string;
 }
 
-export type UpClientOptions = {
+export interface UpClientOptions {
 	personalAccessToken: string;
 };
 
@@ -97,13 +97,16 @@ export type GetAccountResponse = {
 };
 
 
-export type GetAccountsQueryOptions = {
+/**
+ * Up API Parmas
+ */
+export interface GetAccountsQueryOptions {
 	pageSize?: number;
 	filterAccType?: AccountTypeEnum;
 	filterAccOwnershipType?: OwnershipTypeEnum;
 };
 
-export type GetTransactionsQueryOptions = {
+export interface GetTransactionsQueryOptions {
 	pageSize?: number;
 	filterStatus?: TransactionStatus;
 	filterSince?: string;
@@ -134,7 +137,7 @@ export type TagResponse = {
 	relationships: TagRelationships;
 };
 
-export type PostTagPayload = {
+export interface PostTagPayload {
 	type: 'tags',
 	id: string;
 }
