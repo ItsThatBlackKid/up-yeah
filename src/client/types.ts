@@ -106,7 +106,7 @@ export interface GetAccountsQueryOptions {
 	filterAccOwnershipType?: OwnershipTypeEnum;
 };
 
-export type GetTransactionsQueryOptions = {
+export interface GetTransactionsQueryOptions {
 	pageSize?: number;
 	filterStatus?: TransactionStatus;
 	filterSince?: string;

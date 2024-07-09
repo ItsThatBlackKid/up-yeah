@@ -72,7 +72,7 @@ describe('TransactionResource', () => {
 
 			mockAxios.get.mockResolvedValue({
 				data: {
-					data: [mockAccountResponse],
+					data: mockAccountResponse,
 					links: {
 						prev: null,
 						next: null,
@@ -86,7 +86,7 @@ describe('TransactionResource', () => {
 				'http://some.up.au/api/v1/accounts/mock-id',
 				undefined,
 			);
-			expect(account).toBeInstanceOf(Array<AccountResource[]>);
+			expect(account).toBeInstanceOf(AccountResource);
 		});
 
 		it('throw error if no parent link', () => {
