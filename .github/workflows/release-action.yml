@@ -12,6 +12,9 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,6 +72,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: chmod +x scripts/build-install.sh
       - run: ./scripts/build-install.sh
-      - run: npm publish --provenance --access public ${{steps.download.outputs.download-path}}
+      - run: npm publish --provenance --access public up-yeah@${{steps.semver.outputs.next}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
