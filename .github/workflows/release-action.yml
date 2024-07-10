@@ -72,7 +72,6 @@ jobs:
           name: ${{steps.semver.outputs.next}}
           token: ${{github.token}}
 
-        
       - name: NPM Publish
         uses: actions/setup-node@v4
         if:  ${{ !contains(steps.semver.outputs.bump, 'none' )}}
