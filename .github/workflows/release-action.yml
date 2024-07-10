@@ -43,7 +43,7 @@ jobs:
         id: split
         env:
           NEXT: ${{steps.semver.outputs.bump}}
-        run: echo echo "::set-output name=package-name::up-yeah-${NEXT##*v}.tgz"
+        run: echo "package-name= 'up-yeah-${NEXT##*v}.tgz'" >> $GITHUB_OUTPUT
 
     
       - run: chmod +x scripts/build-install.sh
