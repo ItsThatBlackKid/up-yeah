@@ -37,9 +37,18 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
       
       - name: Update Release
-        run: gh release edit $tag --prelease=false
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1.12.0
+        with:
           tag: ${{inputs.tag}}
+          allowUpdates: true
+          draft: false
+          prerelease: false
+          makeLatest: false
+          generateReleaseNotes: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{github.token}}
+
+      
 
           
