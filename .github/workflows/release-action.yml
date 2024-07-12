@@ -57,7 +57,6 @@ jobs:
           prerelease: true
           makeLatest: true
           generateReleaseNotes: true
-          updateOnlyUnreleased: true
           omitPrereleaseDuringUpdate: true
           omitBodyDuringUpdate: true
           omitNameDuringUpdate: true
