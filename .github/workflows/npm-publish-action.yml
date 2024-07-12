@@ -24,7 +24,7 @@ jobs:
         id: download
         with:
           tag: ${{inputs.tag}}
-          fileName: up-yeah-${{steps.version.number}}.tgz
+          fileName: up-yeah-${{steps.version.outputs.number}}.tgz
           
       - uses: actions/setup-node@v4
         with:

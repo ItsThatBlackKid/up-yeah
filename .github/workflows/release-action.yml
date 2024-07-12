@@ -52,7 +52,7 @@ jobs:
           tag: ${{steps.semver.outputs.next}}
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: "up-yeah@${{steps.semver.outputs.next}}.zip, lib/up-yeah-${{steps.semver.nextStrict}}.tgz"
+          artifacts: "up-yeah@${{steps.semver.outputs.next}}.zip, lib/up-yeah-${{steps.semver.outputs.nextStrict}}.tgz"
           draft: false
           prerelease: true
           makeLatest: true
