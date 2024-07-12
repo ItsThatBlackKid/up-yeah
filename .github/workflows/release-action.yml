@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
+
       - run: chmod +x scripts/build-install.sh
       - run: ./scripts/build-install.sh
 
@@ -32,9 +33,7 @@ jobs:
           token: ${{github.token}}
           branch: master
           noVersionBumpBehavior: current
-          majorList: "release"
 
-          
       - name: Zip artifacts
         uses: montudor/action-zip@v1
         with:
@@ -44,15 +43,20 @@ jobs:
         run: |
           ls -lr
 
+      - name: List artifacts lib
+        run: |
+          cd lib && ls -lr 
+
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
           tag: ${{steps.semver.outputs.next}}
           allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: "up-yeah@${{steps.semver.outputs.next}}.zip"
+          artifacts: "up-yeah@${{steps.semver.outputs.next}}.zip, lib/up-yeah-${{steps.semver.nextStrict}}.tgz"
           draft: false
           prerelease: true
           makeLatest: true
+          generateReleaseNotes: true
           name: ${{steps.semver.outputs.next}}
           token: ${{github.token}}

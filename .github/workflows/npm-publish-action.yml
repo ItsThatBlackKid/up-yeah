@@ -13,12 +13,18 @@ jobs:
       contents: write
       id-token: write
     steps:
+      - name: Drop 'v' prefix from tag
+        id: version
+        env:
+          VERSION: ${{inputs.tag}}
+        run: echo "number=${VERSION##*v}" >> $GTIHUB_OUTPUT
+
       - name: Download Release ${{inputs.tag}}
         uses: robinraju/release-downloader@v1
         id: download
         with:
           tag: ${{inputs.tag}}
-          fileName: up-yeah-${{inputs.tag}}.tgz
+          fileName: up-yeah-${{steps.version.number}}.tgz
           
       - uses: actions/setup-node@v4
         with:
@@ -29,3 +35,11 @@ jobs:
       - run: npm publish --provenance --access public ${{steps.download.outputs.downloaded_files[0]}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
+      
+      - name: Update Release
+        run: gh release edit $tag --prelease=false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{inputs.tag}}
+
+          
