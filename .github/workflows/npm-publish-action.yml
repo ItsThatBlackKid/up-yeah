@@ -17,7 +17,7 @@ jobs:
         id: version
         env:
           VERSION: ${{inputs.tag}}
-        run: echo "number='${NEXT##*v}'" >> $GITHUB_OUTPUT
+        run: echo "number='${VERSION##*v}'" >> $GITHUB_OUTPUT
 
       - name: Download Release ${{inputs.tag}}
         uses: robinraju/release-downloader@v1
