@@ -3,27 +3,52 @@ on:
     workflow_dispatch:
       inputs:
         tag:
-          description: 'release tag'
+          description: 'git commit sha'
           required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
-      - name: Download up-yeah${{inputs.tag}}
-        id: download
-        uses: actions/download-artifact@v4
-        with: 
-          name: up-yeah@${{inputs.tag}}.tgz
+      - name: Drop 'v' prefix from tag
+        id: version
+        env:
+          VERSION: ${{inputs.tag}}
+        run: echo "number=${VERSION##*v}" >> $GTIHUB_OUTPUT
 
-      - uses: actions/checkout@v4
-      # Setup .npmrc file to publish to npm
+      - name: Download Release ${{inputs.tag}}
+        uses: robinraju/release-downloader@v1
+        id: download
+        with:
+          tag: ${{inputs.tag}}
+          fileName: up-yeah-${{steps.version.number}}.tgz
+          
       - uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
       - run: chmod +x scripts/build-install.sh
       - run: ./scripts/build-install.sh
-      - run: npm publish --provenance --access public ${{steps.download.outputs.download-path}}
+      - run: npm publish --provenance --access public ${{steps.download.outputs.downloaded_files[0]}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
+      
+      - name: Update Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          tag: ${{inputs.tag}}
+          allowUpdates: true
+          draft: false
+          prerelease: false
+          makeLatest: false
+          generateReleaseNotes: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{github.token}}
+
+      
+
+          
