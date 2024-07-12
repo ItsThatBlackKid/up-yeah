@@ -42,6 +42,10 @@ jobs:
         run: |
           ls -lr
 
+      - name: Make Release Tarball
+        id: release-tarball
+        run: cd lib && npm pack  
+
       - name: List artifacts lib
         run: |
           cd lib && ls -lr 
