@@ -62,7 +62,6 @@ jobs:
           makeLatest: true
           generateReleaseNotes: true
           omitPrereleaseDuringUpdate: true
-          omitBodyDuringUpdate: true
           omitNameDuringUpdate: true
           name: ${{steps.semver.outputs.next}}
           token: ${{github.token}}
