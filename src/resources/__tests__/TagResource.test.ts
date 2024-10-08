@@ -1,4 +1,4 @@
-import TagResource from '../Tags/TagResource';
+import {TagResource} from '../Tags';
 import { mockTagRelationships } from '../../__mocks__/tagData';
 
 describe('TagResource', () => {

@@ -4,9 +4,9 @@ import mockAxios from '../../__mocks__/axios';
 import { mockAccountResource, mockAccountResource2 } from '../../__mocks__/mockResources/accounts';
 import { mockListTransactionsMultiResponse, mockTransactionAttributes } from '../../__mocks__/transactionData';
 import { ResponseLinks } from '../../types';
-import AccountResource from '../Account/AccountResource';
-import ResourceCollection from '../Resource/ResourceCollection';
-import TransactionResource from '../Transactions/TransactionResource';
+import {AccountResource} from '../Account';
+import {ResourceCollection} from '../Resource';
+import {TransactionResource} from '../Transactions';
 import { AccountTypeEnum, OwnershipTypeEnum, TransactionStatusEnum } from '../types';
 
 describe('ResourceLink', () => {

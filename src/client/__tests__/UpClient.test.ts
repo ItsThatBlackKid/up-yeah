@@ -13,23 +13,23 @@ import {
 	mockUpGetTransactionsEmpty,
 } from '../../__mocks__/transactionData';
 import { IUpError } from '../../errors';
-import UpErrorCollection from '../../errors/UpErrorCollection';
-import AccountResource from '../../resources/Account/AccountResource';
-import CategoryResource from '../../resources/Category/CategoryResource';
-import ResourceCollection from '../../resources/Resource/ResourceCollection';
-import TagResource from '../../resources/Tags/TagResource';
-import TransactionResource from '../../resources/Transactions/TransactionResource';
+import {UpErrorCollection} from '../../errors';
+import {AccountResource} from '../../resources';
+import {CategoryResource} from '../../resources';
+import {ResourceCollection} from '../../resources';
+import {TagResource} from '../../resources';
+import {TransactionResource} from '../../resources';
 import {
 	AccountTypeEnum,
 	OwnershipTypeEnum,
 	TransactionAttributes,
 	TransactionStatusEnum,
-} from '../../resources/types';
+} from '../../resources';
 import {
 	buildAccountGetParams,
 	buildTransactionQueryParams,
-} from '../../utils/buildParams';
-import UpClient from '../UpClient';
+} from '../../utils';
+import {UpClient} from '../UpClient';
 import {
 	GetAccountsQueryOptions,
 	GetTransactionsQueryOptions,

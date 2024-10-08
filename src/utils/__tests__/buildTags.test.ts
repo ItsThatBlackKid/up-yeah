@@ -1,5 +1,5 @@
 import { mockTagRelationships, mockTags } from '../../__mocks__/tagData';
-import TagResource from '../../resources/Tags/TagResource';
+import {TagResource} from '../../resources';
 import { buildTag, buildTags } from '../buildResources';
 
 describe('buildTags.ts', () => {

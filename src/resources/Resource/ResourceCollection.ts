@@ -85,7 +85,7 @@ export class ResourceCollection<T extends Resource> implements IResourceLink<T> 
 			const collectedErrors: UpError[] = [];
 
 			if (errors) {
-				errors.forEach(err => {
+				for(const err of errors) {
 					collectedErrors.push(
 						new UpError(
 							err.status,
@@ -94,7 +94,7 @@ export class ResourceCollection<T extends Resource> implements IResourceLink<T> 
 							err.source,
 						),
 					);
-				});
+				}
 			}
 
 			throw new UpErrorCollection(collectedErrors);

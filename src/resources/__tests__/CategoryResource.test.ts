@@ -1,5 +1,5 @@
 import { CategoryAttributes, CategoryRelationships } from '../types';
-import CategoryResource from '../Category/CategoryResource';
+import {CategoryResource} from '../Category';
 
 const mockAttributes: CategoryAttributes = {
 	name: 'good-life',

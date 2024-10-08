@@ -1,5 +1,5 @@
-import { IUpError } from '../UpError';
-import UpErrorCollection from '../UpErrorCollection';
+import { IUpError } from '../types';
+import {UpErrorCollection} from '../UpErrorCollection';
 
 describe('UpErrorCollection', () => {
 	it('should store errors in error variable', () => {
