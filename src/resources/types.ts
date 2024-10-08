@@ -1,4 +1,4 @@
-import { Maybe, RelationshipResource, RelationshipResourceChildren, ResourceLinkRelatedRequired } from '../../types';
+import { Maybe, RelationshipResource, RelationshipResourceChildren, ResourceLinkRelatedRequired } from '../types';
 
 /**
  * Account Types

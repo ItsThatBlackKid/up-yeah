@@ -1,5 +1,5 @@
 import { TagResponse } from '../../client';
-import TagResource from '../../resources/Tags/TagResource';
+import {TagResource} from '../../resources';
 
 export const buildTag = (tag: TagResponse): TagResource => {
 	const { id, relationships } = tag;

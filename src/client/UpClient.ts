@@ -3,31 +3,21 @@
  * Axios client to handle HTTP requests to the Up API
  */
 
-import axios, { Axios, AxiosResponse } from 'axios';
-import UpError from '../errors/UpError';
-import UpErrorCollection from '../errors/UpErrorCollection';
-import AccountResource from '../resources/Account/AccountResource';
-import CategoryResource from '../resources/Categories/CategoryResource';
-import ResourceCollection from '../resources/Resource/ResourceCollection';
-import TagResource from '../resources/Tags/TagResource';
-import TransactionResource from '../resources/Transactions/TransactionResource';
+import axios, {Axios, AxiosResponse} from 'axios';
+import {UpErrorCollection, UpError} from '../errors';
+import {AccountResource, ResourceCollection, TagResource, TransactionResource, CategoryResource} from '../resources';
 import {
 	buildAccount,
+	buildAccountGetParams,
 	buildAccounts,
 	buildTags,
 	buildTransaction,
-	buildTransactions,
-} from '../utils';
-import {
-	buildAccountGetParams,
 	buildTransactionQueryParams,
-} from '../utils/buildParams';
+	buildTransactions
+} from '../utils';
+import {buildCategories, buildCategory,} from '../utils/buildResources/buildCategories';
 import {
-	buildCategories,
-	buildCategory,
-} from '../utils/buildResources/buildCategories';
-import {
-	ErrorObject,
+	UpErrorObject,
 	GetAccountResponse,
 	GetAccountsQueryOptions,
 	GetAccountsResponse,
@@ -39,7 +29,7 @@ import {
 	UpClientOptions,
 } from './types';
 
-class UpClient {
+export class UpClient {
 	private readonly clientInstance: Axios;
 
 	/**
@@ -63,7 +53,7 @@ class UpClient {
 	}
 
 	private buildAndThrowErrors = (e: any) => {
-		const errors: ErrorObject[] | undefined = e.response?.data?.errors;
+		const errors: UpErrorObject[] | undefined = e.response?.data?.errors;
 
 		if (!errors) {
 			throw new UpErrorCollection([]);
@@ -169,7 +159,7 @@ class UpClient {
 	): Promise<TransactionResource> => {
 		try {
 			const {
-				data: { data: transaction },
+				data: {data: transaction},
 			} = await this.clientInstance.get<GetTransactionResponse>(
 				`/transactions/${transactionId}`,
 			);
@@ -300,4 +290,3 @@ class UpClient {
 	};
 }
 
-export default UpClient;

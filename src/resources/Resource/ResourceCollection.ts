@@ -1,23 +1,20 @@
 import { Axios } from 'axios';
 import {
 	AccountResourceResponse,
-	ErrorObject,
+	UpErrorObject,
 	TransactionResponse
 } from '../../client';
-import UpError from '../../errors/UpError';
-import UpErrorCollection from '../../errors/UpErrorCollection';
+import {UpError, UpErrorCollection} from '../../errors';
 import { Maybe, ResourceResponse, ResponseLinks } from '../../types';
 import { buildAccounts, buildTransactions } from '../../utils';
-import AccountResource from '../Account/AccountResource';
-import TransactionResource from '../Transactions/TransactionResource';
+import {AccountResource} from '../Account';
+import {TransactionResource} from '../Transactions';
 import { ResourceType } from '../types';
-import Resource from './Resource';
+import {Resource} from './Resource';
+import {IResourceLink} from "./types";
 
-interface IResourceLink<T extends Resource> {
-	prev: () => Promise<Maybe<T[]>>;
-	next: () => Promise<Maybe<T[]>>;
-}
-export default class ResourceCollection<T extends Resource> implements IResourceLink<T> {
+
+export class ResourceCollection<T extends Resource> implements IResourceLink<T> {
 	private client: Axios;
 	prevLink: Maybe<string>;
 	nextLink: Maybe<string>;
@@ -84,7 +81,7 @@ export default class ResourceCollection<T extends Resource> implements IResource
 				>(linkURL);
 			}
 		} catch (e: any) {
-			const errors: ErrorObject[] | undefined = e.response.data.errors;
+			const errors: UpErrorObject[] | undefined = e.response.data.errors;
 			const collectedErrors: UpError[] = [];
 
 			if (errors) {

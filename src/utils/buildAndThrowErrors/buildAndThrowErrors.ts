@@ -1,9 +1,8 @@
-import {ErrorObject} from "../../client";
-import UpError from "../../errors/UpError";
-import UpErrorCollection from "../../errors/UpErrorCollection";
+import {UpErrorObject} from "../../client";
+import {UpError, UpErrorCollection} from "../../errors";
 
 export const buildAndThrowErrors = (e: any) => {
-    const errors: ErrorObject[] | undefined = e.response.data.errors;
+    const errors: UpErrorObject[] | undefined = e.response.data.errors;
     const collectedErrors: UpError[] = [];
 
     if (errors) {

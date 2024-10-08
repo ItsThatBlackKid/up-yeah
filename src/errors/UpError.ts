@@ -3,16 +3,9 @@
  * Doc ref: https://developer.up.com.au/#error-responses
  * By Sao Kanneh
  */
-import { ErrorSource } from './types';
+import {ErrorSource, IUpError} from './types';
 
-export interface IUpError {
-	status: string;
-	title: string;
-	detail: string;
-	source?: ErrorSource;
-}
-
-export default class UpError extends Error implements IUpError {
+export class UpError extends Error implements IUpError {
 	private readonly _status: string;
 	private readonly _title: string;
 	private readonly _detail: string;

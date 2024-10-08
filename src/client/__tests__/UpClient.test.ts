@@ -15,7 +15,7 @@ import {
 import { IUpError } from '../../errors';
 import UpErrorCollection from '../../errors/UpErrorCollection';
 import AccountResource from '../../resources/Account/AccountResource';
-import CategoryResource from '../../resources/Categories/CategoryResource';
+import CategoryResource from '../../resources/Category/CategoryResource';
 import ResourceCollection from '../../resources/Resource/ResourceCollection';
 import TagResource from '../../resources/Tags/TagResource';
 import TransactionResource from '../../resources/Transactions/TransactionResource';
@@ -324,7 +324,7 @@ describe('Up Client', () => {
 		});
 	});
 
-	describe('Categories', () => {
+	describe('Category', () => {
 		describe('getCategories', () => {
 			it('should invoke axios get', async () => {
 				mockAxios.get.mockResolvedValue({

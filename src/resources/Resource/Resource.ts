@@ -1,63 +1,56 @@
-import { Axios } from 'axios';
-import {
-	ErrorObject,
-	GetAccountsQueryParams,
-	GetTransactionsQueryParams,
-} from '../../client';
-import UpError from '../../errors/UpError';
-import UpErrorCollection from '../../errors/UpErrorCollection';
-import { ResourceResponse } from '../../types';
-import { ResourceType } from '../types';
+import {Axios} from 'axios';
+import {UpErrorObject, GetAccountsQueryParams, GetTransactionsQueryParams,} from '../../client';
+import {UpError, UpErrorCollection} from '../../errors';
+import {ResourceResponse} from '../../types';
+import {ResourceType} from '../types';
+import {IResource} from "./types";
 
-export interface IResource {
-	type: ResourceType;
-	id: string;
-}
+export abstract class Resource implements IResource {
+    protected client?: Axios;
 
-export default abstract class Resource implements IResource {
-	protected client?: Axios;
-	protected constructor(id: string, type: ResourceType) {
-		this.id = id;
-		this.type = type;
-	}
-	type: ResourceType;
-	id: string;
+    protected constructor(id: string, type: ResourceType) {
+        this.id = id;
+        this.type = type;
+    }
 
-	public setClient(client: Axios): void {
-		this.client = client;
-	}
+    type: ResourceType;
+    id: string;
 
-	protected async handleLink<TResponse>(
-		link: string,
-		params?: GetAccountsQueryParams | GetTransactionsQueryParams,
-	): Promise<ResourceResponse<TResponse>> {
-		if (!this.client) {
-			throw new Error('Client instance not provided');
-		}
+    public setClient(client: Axios): void {
+        this.client = client;
+    }
 
-		try {
-			const dataRes = (
-				await this.client.get<ResourceResponse<TResponse>>(link, params ? { params} : undefined)
-			).data;
+    protected async handleLink<TResponse>(
+        link: string,
+        params?: GetAccountsQueryParams | GetTransactionsQueryParams,
+    ): Promise<ResourceResponse<TResponse>> {
+        if (!this.client) {
+            throw new Error('Client instance not provided');
+        }
 
-			return dataRes;
-		} catch (e: any) {
-			const errors: ErrorObject[] | undefined = e.response.data.errors;
-			const collectedErrors: UpError[] = [];
-			if (errors) {
-				errors.forEach(err => {
-					collectedErrors.push(
-						new UpError(
-							err.status,
-							err.title,
-							err.detail,
-							err.source,
-						),
-					);
-				});
-			}
+        try {
+            const dataRes = (
+                await this.client.get<ResourceResponse<TResponse>>(link, params ? {params} : undefined)
+            ).data;
 
-			throw new UpErrorCollection(collectedErrors);
-		}
-	}
+            return dataRes;
+        } catch (e: any) {
+            const errors: UpErrorObject[] | undefined = e.response.data.errors;
+            const collectedErrors: UpError[] = [];
+            if (errors) {
+                errors.forEach(err => {
+                    collectedErrors.push(
+                        new UpError(
+                            err.status,
+                            err.title,
+                            err.detail,
+                            err.source,
+                        ),
+                    );
+                });
+            }
+
+            throw new UpErrorCollection(collectedErrors);
+        }
+    }
 }

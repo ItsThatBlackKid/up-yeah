@@ -1,9 +1,10 @@
 /**
  * Created on 15/01/23
  */
-import { IUpError } from './UpError';
+import {UpError} from './UpError';
+import {IUpError} from "./types";
 
-export default class UpErrorCollection extends Error {
+export class UpErrorCollection extends Error {
 	private readonly _errors: IUpError[];
 
 	constructor(errors: IUpError[]) {

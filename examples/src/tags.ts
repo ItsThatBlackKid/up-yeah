@@ -1,8 +1,9 @@
 import {client}  from './client';
 import { runExample } from './util';
+import {ResourceCollection, TagResource, TransactionResource} from "up-yeah";
 
 const getTags = async () => {
-	const tags = await client.getTags();
+	const tags: ResourceCollection<TagResource> = await client.getTags();
 
 	tags.resources.forEach(tag => {
 		console.log(JSON.stringify(tag, null, 2))
@@ -10,7 +11,7 @@ const getTags = async () => {
 }
 
 const tagTransaction = async () => {
-	const transactions = await client.getTransactions();
+	const transactions:ResourceCollection<TransactionResource> = await client.getTransactions();
 	const {id} = transactions.resources[0];
 
 	const sucess = await client.addTagsToTransaction(id, [

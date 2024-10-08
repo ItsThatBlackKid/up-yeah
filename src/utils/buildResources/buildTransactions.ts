@@ -1,6 +1,6 @@
 import { Axios } from 'axios';
 import { TransactionResponse } from '../../client';
-import TransactionResource from '../../resources/Transactions/TransactionResource';
+import {TransactionResource} from '../../resources';
 
 export const buildTransaction = (
 	transaction: TransactionResponse,
