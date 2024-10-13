@@ -1,13 +1,5 @@
 name: Build and Release
-on:
-  workflow_run:
-    workflows: [ Test ]
-    branches:
-      - master
-      - 'ci/**'
-    types:
-      - completed
-
+on: workflow_dispatch
 
 jobs:
   build-and-release:
