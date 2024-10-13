@@ -1,7 +1,6 @@
 import { Axios } from 'axios';
 import { AccountResourceResponse } from '../../client';
-import AccountResource from '../../resources/Account/AccountResource';
-import { AccountTypeEnum, OwnershipTypeEnum } from '../../resources/types';
+import { AccountTypeEnum, OwnershipTypeEnum, AccountResource } from '../../resources';
 
 export const buildAccount = (account: AccountResourceResponse, client?: Axios): AccountResource => {
 	const { id, attributes, relationships } = account;

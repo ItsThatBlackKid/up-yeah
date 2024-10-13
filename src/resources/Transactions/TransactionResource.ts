@@ -1,7 +1,6 @@
-import { AccountResourceResponse } from '../../client';
-import { buildAccount } from '../../utils';
-import { buildAndThrowErrors } from '../../utils/buildAndThrowErrors';
-import Resource, { IResource } from '../Resource/Resource';
+import {AccountResourceResponse} from '../../client';
+import {buildAccount, buildAndThrowErrors} from '../../utils';
+import {IResource, Resource,} from '../Resource';
 import {
 	CardPurchaseMethodObject,
 	CashbackObject,
@@ -30,7 +29,7 @@ export interface ITransactionResource extends IResource {
 	relationships: TransactionRelationships;
 }
 
-export default class TransactionResource extends Resource implements ITransactionResource {
+export class TransactionResource extends Resource implements ITransactionResource {
 	amount: MoneyObject;
 	cardPurchaseMethod?: CardPurchaseMethodObject;
 	cashBack?: CashbackObject;

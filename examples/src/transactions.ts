@@ -1,5 +1,5 @@
-import { GetAccountsQueryOptions, GetTransactionsQueryOptions } from '../lib';
-import TransactionResource from '../lib/resources/Transactions/TransactionResource';
+import { GetAccountsQueryOptions, GetTransactionsQueryOptions } from 'up-yeah';
+import {TransactionResource} from 'up-yeah/resources';
 import { client } from './client';
 import { runExample } from './util';
 
@@ -54,7 +54,7 @@ const getTransactionsByAccount = async () => {
 };
 
 (async () => {
-    // await runExample('List Transactions', listTransactions);
-    // await runExample('Get Transactions With Options', getTransactionsWithOptions);
-    // await runExample('Get Account By Transaction', getTransactionAccount)
+    await runExample('List Transactions', listTransactions);
+    await runExample('Get Transactions With Options', getTransactionsWithOptions);
+    await runExample('Get Account By Transaction', getTransactionAccount)
 })();

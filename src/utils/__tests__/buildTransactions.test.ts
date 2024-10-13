@@ -4,8 +4,8 @@ import {
 	mockListTransactionsMultiResponse,
 	mockTransactionResponse,
 } from '../../__mocks__/transactionData';
-import TransactionResource from '../../resources/Transactions/TransactionResource';
-import { TransactionStatusEnum } from '../../resources/types';
+import {TransactionResource} from '../../resources';
+import { TransactionStatusEnum } from '../../resources';
 import { buildTransaction, buildTransactions } from '../buildResources';
 
 describe('buildTransactions.ts', () => {

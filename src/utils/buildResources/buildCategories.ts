@@ -1,5 +1,5 @@
 import { CategoryResponse } from '../../client';
-import CategoryResource from '../../resources/Categories/CategoryResource';
+import {CategoryResource} from '../../resources';
 
 export const buildCategory = (category: CategoryResponse): CategoryResource => {
 	const { id, attributes, relationships } = category;

@@ -1,10 +1,5 @@
-import {
-	GetAccountsQueryOptions,
-	GetTransactionsQueryOptions, OwnershipTypeEnum
-} from '../lib';
-import AccountResource from '../lib/resources/Account/AccountResource';
-import { client } from './client';
-import { runExample } from './util';
+import { GetAccountsQueryOptions, AccountResource, OwnershipTypeEnum } from 'up-yeah';
+import {client} from './client'
 
 const getAccounts = async () => {
 	const accountCollection = await client.getAccounts();

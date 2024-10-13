@@ -10,8 +10,8 @@ import {
 	TagRelationships,
 	TransactionRelationships,
 	TransactionStatusEnum,
-} from '../resources/types';
-import { AccountRelationships, ResourceLink, ResponseLinks } from '../types';
+} from '../resources';
+import {AccountRelationships, ResourceLink, ResponseLinks} from '../types';
 
 
 export interface GetAccountsQueryParams {
@@ -152,7 +152,7 @@ export type GetTagResponse = {
 	links: ResponseLinks;
 };
 
-export type ErrorObject = {
+export type UpErrorObject = {
 	status: string;
 	title: string;
 	detail: string;

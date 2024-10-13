@@ -1,12 +1,8 @@
-import { IResource } from '../Resource';
-import Resource from '../Resource/Resource';
-import { TagRelationships } from '../types';
+import {Resource} from '../Resource';
+import {TagRelationships} from '../types';
+import {ITagResource} from "./types";
 
-interface ITagResource extends IResource {
-	relationships: TagRelationships;
-}
-
-export default class TagResource extends Resource implements ITagResource {
+export class TagResource extends Resource implements ITagResource {
 	relationships: TagRelationships;
 
 	constructor(id: string, relationships: TagRelationships) {

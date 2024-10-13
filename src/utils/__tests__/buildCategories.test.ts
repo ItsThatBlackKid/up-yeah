@@ -1,6 +1,6 @@
 import { buildCategories, buildCategory } from '../buildResources/buildCategories';
 import { mockGetCategoriesResponse } from '../../__mocks__/categoryData';
-import CategoryResource from '../../resources/Categories/CategoryResource';
+import {CategoryResource} from '../../resources';
 
 const mockCategory = new CategoryResource(
 	'hobbies',

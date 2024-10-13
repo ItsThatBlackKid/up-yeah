@@ -1,5 +1,5 @@
-import AccountResource from '../../resources/Account/AccountResource';
-import { AccountTypeEnum, OwnershipTypeEnum } from '../../resources/types';
+import {AccountResource} from '../../resources';
+import { AccountTypeEnum, OwnershipTypeEnum } from '../../resources';
 import { buildAccount, buildAccounts } from '../buildResources';
 import { mockAccountResponse, mockUpAccountsResponse } from '../../__mocks__/accountData';
 import mockAxios from '../../__mocks__/axios';

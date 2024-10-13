@@ -1,4 +1,4 @@
-import UpError from '../UpError';
+import {UpError} from '../UpError';
 
 describe('UpError', () => {
 	it('should build class correctly', () => {

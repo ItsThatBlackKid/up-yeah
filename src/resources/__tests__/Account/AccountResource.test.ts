@@ -1,5 +1,5 @@
 import { AccountRelationships } from '../../../types';
-import AccountResource from '../../Account/AccountResource';
+import {AccountResource} from '../../Account';
 import { AccountAttributes, AccountTypeEnum, OwnershipTypeEnum } from '../../types';
 import mockAxios from 'jest-mock-axios';
 import { mockListTransactionsResponse } from '../../../__mocks__/transactionData';

@@ -2,14 +2,14 @@ import { Axios } from 'axios';
 import { mockAccountResponse } from '../../__mocks__/accountData';
 import mockAxios from '../../__mocks__/axios';
 import { IUpError } from '../../errors';
-import UpErrorCollection from '../../errors/UpErrorCollection';
-import TransactionResource from '../Transactions/TransactionResource';
+import {UpErrorCollection} from '../../errors';
+import {TransactionResource} from '../Transactions';
 import {
 	TransactionAttributes,
 	TransactionRelationships,
 	TransactionStatusEnum,
 } from '../types';
-import AccountResource from '../Account/AccountResource';
+import {AccountResource} from '../Account';
 
 const mockAttributes: TransactionAttributes = {
 	amount: {

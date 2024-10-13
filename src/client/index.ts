@@ -1,4 +1,4 @@
-import UpClient from './UpClient';
+import {UpClient} from './UpClient';
 export default UpClient;
 export * from './UpClient';
 export * from './types';
